@@ -8,23 +8,25 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { CovalentCoreModule } from '@covalent/core';
 
 import { AppComponent } from './app.component';
-import { routing, appRoutingProviders } from './app.routing';
+//import { routing, appRoutingProviders } from './app.routing';
 import { LoginComponent } from './login/login.component';
 import { AlertService, AuthenticationService, UserService } from './_services/index';
+
+import { AppRoutingModule } from './app-routing.module';
 
 import { AuthGuard } from './auth.guard';
 import { AppConfig } from './app.config';
 import { AlertComponent } from './alert/alert.component';
-import { HomeComponent } from './home/home.component';
+//import { HomeComponent } from './home/home.component';
+import { HomeModule } from './home/home.module';
 
-import { DashboardModule } from './dashboard/dashboard.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     AlertComponent,
-    HomeComponent,
+  //  HomeComponent,
   ],
   imports: [
     BrowserModule,
@@ -32,8 +34,9 @@ import { DashboardModule } from './dashboard/dashboard.module';
     FormsModule,
     HttpModule,
     CovalentCoreModule.forRoot(),
-    routing,
-    DashboardModule
+//    routing,
+    HomeModule,
+    AppRoutingModule,
   ],
   providers: [
     AppConfig,
@@ -41,7 +44,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
     AlertService,
     AuthenticationService,
     UserService,
-    appRoutingProviders,
+//    appRoutingProviders,
   ],
   bootstrap: [AppComponent]
 })
