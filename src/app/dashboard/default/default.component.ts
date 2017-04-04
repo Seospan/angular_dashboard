@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FilterService } from '../services/filter-service';
 
 @Component({
   selector: 'app-default',
@@ -28,10 +29,11 @@ export class DefaultComponent implements OnInit {
     },
   ];
 
-  constructor() { }
+  constructor(private filterService : FilterService){
+  }
 
   ngOnInit() {
-    
+    this.filterService.setShowFilters(false);
   }
 
 }
