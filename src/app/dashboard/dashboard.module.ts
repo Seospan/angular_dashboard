@@ -12,6 +12,10 @@ import { DashboardComponent } from './dashboard.component';
 import { CovalentDataTableModule } from '@covalent/core';
 import { FraudDetectorComponent } from './fraud-detector/fraud-detector.component';
 import { MultiAttributionComponent } from './multi-attribution/multi-attribution.component';
+import { DefaultComponent } from './default/default.component';
+import { ReportingComponent } from './reporting/reporting.component';
+
+import { FilterService } from './services/filter-service';
 
 @NgModule({
   imports: [
@@ -20,11 +24,17 @@ import { MultiAttributionComponent } from './multi-attribution/multi-attribution
     CovalentHighlightModule,
     DashboardRoutingModule,
     CovalentDataTableModule.forRoot(),
+
   ],
   declarations: [
     DashboardComponent,
     FraudDetectorComponent,
     MultiAttributionComponent,
+    DefaultComponent,
+    ReportingComponent,
+  ],
+  providers: [
+    FilterService
   ]
 })
 export class DashboardModule {

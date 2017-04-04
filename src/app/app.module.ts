@@ -19,13 +19,15 @@ import { AppConfig } from './app.config';
 import { AlertComponent } from './alert/alert.component';
 //import { HomeComponent } from './home/home.component';
 import { HomeModule } from './home/home.module';
-
+import { DashboardModule } from './dashboard/dashboard.module';
+import { NotFoundComponent } from './not-found/not-found.component'
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     AlertComponent,
+    NotFoundComponent,
   //  HomeComponent,
   ],
   imports: [
@@ -36,6 +38,8 @@ import { HomeModule } from './home/home.module';
     CovalentCoreModule.forRoot(),
 //    routing,
     HomeModule,
+    //DashboardModule,
+
     AppRoutingModule,
   ],
   providers: [

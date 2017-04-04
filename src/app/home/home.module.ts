@@ -8,14 +8,15 @@ import { HomeComponent } from './home.component';
 import { HomeRoutingModule } from './home-routing.module';
 
 import { DashboardModule } from '../dashboard/dashboard.module';
+import { DefaultComponent } from './default/default.component';
 
 @NgModule({
   imports: [
     CommonModule,
-    DashboardModule,
     HomeRoutingModule,
+    //DashboardModule,
     CovalentCoreModule,
   ],
-  declarations: [HomeComponent]
+  declarations: [HomeComponent, DefaultComponent]
 })
 export class HomeModule { }

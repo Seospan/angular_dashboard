@@ -2,28 +2,32 @@ import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { DashboardComponent } from './dashboard.component';
+import { DefaultComponent } from './default/default.component'
 import { FraudDetectorComponent } from './fraud-detector/fraud-detector.component';
+import { MultiAttributionComponent } from './multi-attribution/multi-attribution.component'
+import { ReportingComponent } from './reporting/reporting.component'
 
 const dashboardRoutes: Routes = [
   {
-    children: [{
+    path: '',
+    component: DashboardComponent,
+    children: [
+      {
+        component: DefaultComponent,
+        path: '',
+      },
+      {
         component: FraudDetectorComponent,
-        path: 'fraud',
-      },/* {
-        component: NavViewComponent,
-        path: 'nav-view',
+        path: 'fraud-detector',
       }, {
-        component: NavListComponent,
-        path: 'nav-list',
+        component: MultiAttributionComponent,
+        path: 'multi-attribution',
       }, {
-        component: CardOverComponent,
-        path: 'card-over',
-      }, {
-        component: ManageListComponent,
-        path: 'manage-list',
-      },*/
-    ],
-  path: '',  component: DashboardComponent },
+        component: ReportingComponent,
+        path: 'reporting',
+      }
+    ]
+  },
 ];
 @NgModule({
   imports: [
