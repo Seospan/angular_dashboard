@@ -1,4 +1,5 @@
 export class Brand{
   id : number;
-  name : string;  
+  name : string;
+  isSelected : boolean; 
 }

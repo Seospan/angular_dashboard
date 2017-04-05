@@ -1,1 +1,29 @@
 <md-card-subtitle>fraud-detector is loaded</md-card-subtitle>
+
+Active advertisers : <br />
+<div *ngFor="let advertiser of advertisers">
+  <span  *ngIf="advertiser.isSelected" >
+    <div>{{ advertiser.name }}   <span (click)="advertiser.isSelected = !advertiser.isSelected">X</span></div>
+  </span>
+</div>
+<br /><br />
+Active partners : <br />
+<div *ngFor="let partner of partners">
+  <span  *ngIf="partner.isSelected" >
+    <div>{{ partner.name }}   <span (click)="partner.isSelected = !partner.isSelected">X</span></div>
+  </span>
+</div>
+<br /><br />
+Active Kpis : <br />
+<div *ngFor="let kpi of kpis">
+  <span  *ngIf="kpi.isSelected" >
+    <div>{{ kpi.name }}   <span (click)="kpi.isSelected = !kpi.isSelected">X</span></div>
+  </span>
+</div>
+<br /><br />
+Active MetaCampaings : <br />
+<div *ngFor="let metaCampaign of metaCampaigns">
+  <span  *ngIf="metaCampaign.isSelected" >
+    <div>{{ metaCampaign.name }}   <span (click)="metaCampaign.isSelected = !metaCampaign.isSelected">X</span></div>
+  </span>
+</div>

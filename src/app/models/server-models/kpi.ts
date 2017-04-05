@@ -7,4 +7,5 @@ export class Kpi{
   symbol: string;
   product : Product;
   kpiAction : KpiAction;
+  isSelected : boolean;
 }

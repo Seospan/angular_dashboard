@@ -9,9 +9,9 @@ import { DashboardComponent } from '../dashboard/dashboard.component';
   styleUrls: ['./home.component.scss'],
   animations: [fadeAnimation],
 })
-
 export class HomeComponent implements OnInit {
 
+  currentUser : any;
 
   @HostBinding('@routeAnimation') routeAnimation: boolean = true;
   @HostBinding('class.td-route-animation') classAnimation: boolean = true;
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
   }
 
 }

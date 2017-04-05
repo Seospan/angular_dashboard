@@ -3,4 +3,5 @@ export class Advertiser{
   sizmekName : string;
   name : string;
   countryCode : string;
+  isSelected : boolean;
 }

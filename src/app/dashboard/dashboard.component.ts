@@ -1,14 +1,11 @@
 import { Component, HostBinding, OnInit } from '@angular/core';
-
 import { FilterService } from './services/filter-service';
-
 import { Subscription }   from 'rxjs/Subscription';
 
 @Component({
   selector: 'app-dashboard',
   styleUrls: ['./dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
-  providers:[FilterService],
 })
 export class DashboardComponent implements OnInit {
 
@@ -23,7 +20,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(){
     this.filterService.setShowFilters(false);
-
+    console.log("dashboard init");
   }
 
 }

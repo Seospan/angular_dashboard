@@ -1,0 +1,30 @@
+<p>
+  filters works!
+</p>
+Advertisers
+    <ul>
+      <li *ngFor="let advertiser of advertisers">
+        <div (click)="advertiser.isSelected = !advertiser.isSelected" [ngClass]="{'active': advertiser.isSelected}">{{ advertiser.name }}</div>
+      </li>
+    </ul>
+
+partners
+    <ul>
+      <li *ngFor="let partner of partners">
+        <div (click)="partner.isSelected = !partner.isSelected" [ngClass]="{'active': partner.isSelected}">{{ partner.name }}</div>
+      </li>
+    </ul>
+
+Kpis
+    <ul>
+      <li *ngFor="let kpi of kpis">
+        <div (click)="kpi.isSelected = !kpi.isSelected" [ngClass]="{'active': kpi.isSelected}">{{ kpi.name }}</div>
+      </li>
+    </ul>
+
+MetaCampaigns
+    <ul>
+      <li *ngFor="let metaCampaign of metaCampaigns">
+        <div (click)="metaCampaign.isSelected = !metaCampaign .isSelected" [ngClass]="{'active': metaCampaign .isSelected}">{{ metaCampaign.name }}</div>
+      </li>
+    </ul>

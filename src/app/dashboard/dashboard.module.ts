@@ -16,6 +16,7 @@ import { DefaultComponent } from './default/default.component';
 import { ReportingComponent } from './reporting/reporting.component';
 
 import { FilterService } from './services/filter-service';
+import { FiltersComponent } from './filters/filters.component';
 
 @NgModule({
   imports: [
@@ -32,6 +33,7 @@ import { FilterService } from './services/filter-service';
     MultiAttributionComponent,
     DefaultComponent,
     ReportingComponent,
+    FiltersComponent,
   ],
   providers: [
     FilterService
