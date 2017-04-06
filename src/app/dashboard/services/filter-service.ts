@@ -1,10 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Subject }    from 'rxjs/Subject';
 import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index'
+import { AuthenticationService, AdvertiserService, PartnerService, KpiService, MetaCampaignService } from '../../_services/index';
+
+import { Http, Headers, RequestOptions, Response } from '@angular/http';
+import { UserService } from '../../_services/user.service';
+
+import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class FilterService {
-    constructor() { }
+
+    constructor(private http : Http,
+        private advertisersService : AdvertiserService,
+        private partnersService : PartnerService,
+        private kpisService : KpiService,
+        private metaCampaignsService : MetaCampaignService,
+     ) {
+    }
 
     private showFiltersSource = new Subject<boolean>();
     private advertisersSource = new Subject<Advertiser[]>();
@@ -18,127 +31,67 @@ export class FilterService {
     kpis = this.kpisSource.asObservable();
     metaCampaigns = this.metaCampaignsSource.asObservable();
 
+    // private helper methods
+
+    private jwt() {
+        // create authorization header with jwt token
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser && currentUser.token) {
+            let headers = new Headers({ 'Authorization': 'JWT ' + currentUser.token });
+            return new RequestOptions({ headers: headers });
+        }
+    }
+
     setShowFilters(val:boolean):boolean{
-      this.showFiltersSource.next(val);
-      return val;
+        this.showFiltersSource.next(val);
+        return val;
     }
 
     setAdvertisers():void{
-      this.advertisersSource.next([
-        {
-          sizmekId : 123,
-          sizmekName : "Adv1",
-          name : "Adv 1",
-          countryCode : "FR",
-          isSelected:false,
-        },
-        {
-          sizmekId : 456,
-          sizmekName : "Adv2",
-          name : "Adv 2",
-          countryCode : "FR",
-          isSelected:false,
-        },
-        {
-          sizmekId : 789,
-          sizmekName : "Adv3",
-          name : "Adv 3",
-          countryCode : "UK",
-          isSelected:false,
-        }
-      ]);
+        this.advertisersService.getAll().then(
+                result => {
+                    console.log("RESULT Advertisers");
+                    console.log(result);
+                    this.advertisersSource.next( result );
+            },
+        );
     }
 
     setPartners():void{
-      this.partnersSource.next([
-        {
-          id : 123,
-          name : "partner 123",
-          isSelected:false,
-        },
-        {
-          id : 2,
-          name : "partner 2",
-          isSelected:false,
-        },
-        {
-          id : 3,
-          name : "partner 3",
-          isSelected:false,
-        },
-        {
-          id : 4,
-          name : "partner 4",
-          isSelected:false,
-        },
-        {
-          id : 5,
-          name : "partner 5",
-          isSelected:false,
-        },
-
-      ]);
+        this.partnersService.getAll().then(
+                result => {
+                    console.log("RESULT Partners");
+                    console.log(result);
+                    this.partnersSource.next( result );
+            },
+        );
     }
 
     setKpis():void{
-      this.kpisSource.next([
-        {
-          id : 123,
-          name : "KPI 123",
-          symbol : "A",
-          product : new Product(),
-          kpiAction : new KpiAction(),
-          isSelected:false,
-        },
-        {
-          id : 2,
-          name : "KPI 2",
-          symbol : "B",
-          product : new Product(),
-          kpiAction : new KpiAction(),
-          isSelected:false,
-        },
-        {
-          id : 3,
-          name : "KPI 3",
-          symbol : "C",
-          product : new Product(),
-          kpiAction : new KpiAction(),
-          isSelected:false,
-        },
-
-      ]);
+        this.kpisService.getAll().then(
+                result => {
+                    console.log("RESULT Kpis");
+                    console.log(result);
+                    this.kpisSource.next( result );
+            },
+        );
     }
 
-    setMetacampaigns():void{
-      this.metaCampaignsSource.next([
-        {
-          id : 3,
-          name : "Metacampaign 3",
-          isSelected : false,
-        },
-        {
-          id : 123,
-          name : "Metacampaign 123",
-          isSelected : false,
-        },
-        {
-          id : 4,
-          name : "Metacampaign 4",
-          isSelected : false,
-        },
-      ]);
+    setMetaCampaigns():void{
+        this.metaCampaignsService.getAll().then(
+                result => {
+                    console.log("RESULT MetaCampaigns");
+                    console.log(result);
+                    this.metaCampaignsSource.next( result );
+            },
+        );
     }
 
     setAllFilters():void{
       this.setAdvertisers();
       this.setPartners();
       this.setKpis();
-      this.setMetacampaigns();
+      this.setMetaCampaigns();
     }
-    /*setAdvertisersTo(advList:Advertiser[]):void{
-      this.advertisersSource.next(advList);
-    }*/
-
 
 }

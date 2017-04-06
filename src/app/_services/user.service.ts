@@ -16,13 +16,13 @@ export class UserService {
         return this.http.get(this.config.apiUrl + '/users/' + _id, this.jwt()).map((response: Response) => response.json());
     }
 
-    update(user: User) {
+    /*update(user: User) {
         return this.http.put(this.config.apiUrl + '/users/' + user._id, user, this.jwt());
     }
 
     delete(_id: string) {
         return this.http.delete(this.config.apiUrl + '/users/' + _id, this.jwt());
-    }
+    }*/
 
     // private helper methods
 

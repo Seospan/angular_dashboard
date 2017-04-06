@@ -8,7 +8,7 @@ import { DefaultComponent } from './default/default.component'
 import { DashboardModule } from '../dashboard/dashboard.module'
 import { AuthGuard } from '../auth.guard';
 
-const homeRoutes: Routes = [
+export const homeRoutes : Routes = [
   {
     path: 'home',
     component: HomeComponent,
@@ -37,7 +37,7 @@ const homeRoutes: Routes = [
 ];
 @NgModule({
   imports: [
-    RouterModule.forChild(homeRoutes)
+    RouterModule.forChild(homeRoutes),
   ],
   exports: [
     RouterModule

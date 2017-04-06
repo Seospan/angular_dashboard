@@ -4,8 +4,8 @@ import { KpiAction } from './kpi-action'
 export class Kpi{
   id : number;
   name : string;
-  symbol: string;
+  kpi_symbol: string;
   product : Product;
-  kpiAction : KpiAction;
+  //kpiAction : KpiAction;
   isSelected : boolean;
 }

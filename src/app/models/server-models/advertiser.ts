@@ -1,7 +1,7 @@
 export class Advertiser{
-  sizmekId : number;
-  sizmekName : string;
-  name : string;
-  countryCode : string;
-  isSelected : boolean;
+    common_name : string;
+    sizmek_id : number;
+    name : string;
+    country_code : string;
+    isSelected : boolean;
 }

@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 
 import { DashboardRoutingModule } from './dashboard-routing.module';
 
-
 import { CovalentCoreModule } from '@covalent/core';
 import { CovalentHighlightModule } from '@covalent/highlight';
 
@@ -16,6 +15,13 @@ import { DefaultComponent } from './default/default.component';
 import { ReportingComponent } from './reporting/reporting.component';
 
 import { FilterService } from './services/filter-service';
+import { DataFaudDetectorService } from './services/data-fraud-detector.service';
+import { AdvertiserService,
+        PartnerService,
+        KpiService,
+        MetaCampaignService,
+    } from '../_services/index';
+
 import { FiltersComponent } from './filters/filters.component';
 
 @NgModule({
@@ -36,7 +42,12 @@ import { FiltersComponent } from './filters/filters.component';
     FiltersComponent,
   ],
   providers: [
-    FilterService
+    FilterService,
+    AdvertiserService,
+    PartnerService,
+    KpiService,
+    MetaCampaignService,
+    DataFaudDetectorService,
   ]
 })
 export class DashboardModule {

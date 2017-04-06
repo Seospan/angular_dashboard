@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
 import { RouterModule }   from '@angular/router';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
@@ -21,6 +21,8 @@ import { AlertComponent } from './alert/alert.component';
 import { HomeModule } from './home/home.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { NotFoundComponent } from './not-found/not-found.component'
+import { RouterStateSnapshot } from '@angular/router';
+import { MaterialModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -35,6 +37,8 @@ import { NotFoundComponent } from './not-found/not-found.component'
     BrowserAnimationsModule,
     FormsModule,
     HttpModule,
+    MaterialModule,
+    ReactiveFormsModule,
     CovalentCoreModule.forRoot(),
 //    routing,
     HomeModule,
@@ -48,6 +52,7 @@ import { NotFoundComponent } from './not-found/not-found.component'
     AlertService,
     AuthenticationService,
     UserService,
+    //RouterStateSnapshot,
 //    appRoutingProviders,
   ],
   bootstrap: [AppComponent]

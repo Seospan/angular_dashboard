@@ -3,7 +3,7 @@
 Active advertisers : <br />
 <div *ngFor="let advertiser of advertisers">
   <span  *ngIf="advertiser.isSelected" >
-    <div>{{ advertiser.name }}   <span (click)="advertiser.isSelected = !advertiser.isSelected">X</span></div>
+    <div>{{ advertiser.name }} : {{advertiser.isSelected}}   <span (click)="advertiser.isSelected = !advertiser.isSelected">X</span></div>
   </span>
 </div>
 <br /><br />
@@ -25,5 +25,13 @@ Active MetaCampaings : <br />
 <div *ngFor="let metaCampaign of metaCampaigns">
   <span  *ngIf="metaCampaign.isSelected" >
     <div>{{ metaCampaign.name }}   <span (click)="metaCampaign.isSelected = !metaCampaign.isSelected">X</span></div>
+  </span>
+</div>
+
+
+DATA : <br />
+<div *ngFor="let line of dataFraudDetector">
+  <span>
+    <div>{{ line.advertiser_id }}</div>
   </span>
 </div>

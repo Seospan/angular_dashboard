@@ -4,6 +4,7 @@
     <button md-icon-button [mdMenuTriggerFor]="notificationsMenu">
       <td-notification-count color="accent" [notifications]="updates.length + 1">
         <md-icon>notifications</md-icon>
+        {{ currentUser.firstName }}
       </td-notification-count>
     </button>
     <md-menu #notificationsMenu="mdMenu">

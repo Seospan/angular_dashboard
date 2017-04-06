@@ -1,30 +1,75 @@
-<p>
-  filters works!
-</p>
-Advertisers
-    <ul>
-      <li *ngFor="let advertiser of advertisers">
-        <div (click)="advertiser.isSelected = !advertiser.isSelected" [ngClass]="{'active': advertiser.isSelected}">{{ advertiser.name }}</div>
-      </li>
-    </ul>
+<md-card class="result">
+  <md-card-content>
+    <h2>Advertisers</h2>
+      <section>
+        <div (click)="changeAllFilter(advertisers,true)"> Check all </div>
+        <div (click)="changeAllFilter(advertisers,false)"> Uncheck all </div>
+        <div *ngFor="let advertiser of advertisers">
+          <md-checkbox
+                [(ngModel)]="advertiser.isSelected"
+                [ngClass]="{'active' : advertiser.isSelected}"
+                [align]="start"
+                >
+              {{ advertiser.common_name }} : {{advertiser.isSelected}}
+            </md-checkbox>
+        </div>
+      </section>
+  </md-card-content>
+</md-card>
 
-partners
-    <ul>
-      <li *ngFor="let partner of partners">
-        <div (click)="partner.isSelected = !partner.isSelected" [ngClass]="{'active': partner.isSelected}">{{ partner.name }}</div>
-      </li>
-    </ul>
+<md-card class="result">
+  <md-card-content>
+    <h2>Partners</h2>
+      <section>
+        <div (click)="changeAllFilter(partners,true)"> Check all </div>
+        <div (click)="changeAllFilter(partners,false)"> Uncheck all </div>
+        <div *ngFor="let partner of partners">
+          <md-checkbox
+                [(ngModel)]="partner.isSelected"
+                [ngClass]="{'active' : partner.isSelected}"
+                [align]="start"
+                >
+              {{ partner.name }} : {{partner.isSelected}}
+            </md-checkbox>
+        </div>
+      </section>
+  </md-card-content>
+</md-card>
 
-Kpis
-    <ul>
-      <li *ngFor="let kpi of kpis">
-        <div (click)="kpi.isSelected = !kpi.isSelected" [ngClass]="{'active': kpi.isSelected}">{{ kpi.name }}</div>
-      </li>
-    </ul>
+<md-card class="result">
+  <md-card-content>
+    <h2>Kpis</h2>
+      <section>
+        <div (click)="changeAllFilter(kpis,true)"> Check all </div>
+        <div (click)="changeAllFilter(kpis,false)"> Uncheck all </div>
+        <div *ngFor="let kpi of kpis">
+          <md-checkbox
+                [(ngModel)]="kpi.isSelected"
+                [ngClass]="{'active' : kpi.isSelected}"
+                [align]="start"
+                >
+              {{ kpi.name }} : {{kpi.isSelected}}
+            </md-checkbox>
+        </div>
+      </section>
+  </md-card-content>
+</md-card>
 
-MetaCampaigns
-    <ul>
-      <li *ngFor="let metaCampaign of metaCampaigns">
-        <div (click)="metaCampaign.isSelected = !metaCampaign .isSelected" [ngClass]="{'active': metaCampaign .isSelected}">{{ metaCampaign.name }}</div>
-      </li>
-    </ul>
+<md-card class="result">
+  <md-card-content>
+    <h2>MetaCampaigns</h2>
+      <section>
+        <div (click)="changeAllFilter(metaCampaigns,true)"> Check all </div>
+        <div (click)="changeAllFilter(metaCampaigns,false)"> Uncheck all </div>
+        <div *ngFor="let metaCampaign of metaCampaigns">
+          <md-checkbox
+                [(ngModel)]="metaCampaign.isSelected"
+                [ngClass]="{'active' : metaCampaign.isSelected}"
+                [align]="start"
+                >
+              {{ metaCampaign.name }} : {{metaCampaign.isSelected}}
+            </md-checkbox>
+        </div>
+      </section>
+  </md-card-content>
+</md-card>
