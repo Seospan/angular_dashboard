@@ -10,6 +10,8 @@ import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class FilterService {
+    DEBUG:boolean = false;
+    private debugLog(str){ this.DEBUG && console.log(str); }
 
     constructor(private http : Http,
         private advertisersService : AdvertiserService,
@@ -50,8 +52,8 @@ export class FilterService {
     setAdvertisers():void{
         this.advertisersService.getAll().then(
                 result => {
-                    console.log("RESULT Advertisers");
-                    console.log(result);
+                    this.debugLog("RESULT Advertisers");
+                    this.debugLog(result);
                     this.advertisersSource.next( result );
             },
         );
@@ -60,8 +62,8 @@ export class FilterService {
     setPartners():void{
         this.partnersService.getAll().then(
                 result => {
-                    console.log("RESULT Partners");
-                    console.log(result);
+                    this.debugLog("RESULT Partners");
+                    this.debugLog(result);
                     this.partnersSource.next( result );
             },
         );
@@ -70,8 +72,8 @@ export class FilterService {
     setKpis():void{
         this.kpisService.getAll().then(
                 result => {
-                    console.log("RESULT Kpis");
-                    console.log(result);
+                    this.debugLog("RESULT Kpis");
+                    this.debugLog(result);
                     this.kpisSource.next( result );
             },
         );
@@ -80,8 +82,8 @@ export class FilterService {
     setMetaCampaigns():void{
         this.metaCampaignsService.getAll().then(
                 result => {
-                    console.log("RESULT MetaCampaigns");
-                    console.log(result);
+                    this.debugLog("RESULT MetaCampaigns");
+                    this.debugLog(result);
                     this.metaCampaignsSource.next( result );
             },
         );

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-declare var crossfilter: any;
-import '../../../../assets/js/crossfilter.min.js';
+//declare var crossfilter: any;
+//import '../../../../assets/js/crossfilter.min.js';
 
 @Component({
   selector: 'app-default',

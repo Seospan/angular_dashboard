@@ -20,8 +20,8 @@ export const homeRoutes : Routes = [
       },
       {
         path: 'dashboard',
-        //loadChildren: '../dashboard/dashboard.module#DashboardModule'
-        loadChildren: () => DashboardModule
+        loadChildren: '../dashboard/dashboard.module#DashboardModule'
+        //loadChildren: () => DashboardModule
       },
     ]
   },

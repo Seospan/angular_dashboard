@@ -12,6 +12,8 @@ import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class DataFaudDetectorService {
+    DEBUG: boolean = false;
+    private debugLog(str){ this.DEBUG && console.log(str); }
 
     ENDPOINT_URL : string = "/aggregated_suspicious_data/";
 
@@ -43,13 +45,13 @@ export class DataFaudDetectorService {
     , this.jwt())
             .toPromise()
             .then(response => {
-                console.log("RESULT Data response : ");
-                console.log(  response.json());
+                this.debugLog("RESULT Data response : ");
+                this.debugLog(  response.json());
                 return response.json();
             })
             .catch(error => {
-                console.log("error : "+error.json().detail);
-                console.log(error.json());
+                this.debugLog("error : "+error.json().detail);
+                this.debugLog(error.json());
                 //this.router.navigate(['/login'], { queryParams: { returnUrl : window.location.pathname }});
                 return "";
             });
