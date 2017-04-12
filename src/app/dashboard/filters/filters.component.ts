@@ -9,65 +9,13 @@ import { Subscription }   from 'rxjs/Subscription';
   styleUrls: ['./filters.component.css']
 })
 export class FiltersComponent implements OnInit {
-    //Elements of filtering
-    advertisers : Advertiser[];
-    subscriptionAdvertisers : Subscription;
-    partners : Partner[];
-    subscriptionPartners : Subscription;
-    kpis : Kpi[];
-    subscriptionKpis : Subscription;
-    metaCampaigns : MetaCampaign[];
-    subscriptionMetaCampaigns : Subscription;
-
-    DEFAULT_FILTER_STATE: boolean = true;
 
     //Used on click to select / unselect all filters of a type (TODO : is "in place" use of map legit ?)
     changeAllFilter(array,state):void{
         array.map((e) => {e.isSelected = state; return e;});
     }
 
-    constructor(private filterService : FilterService) {
-        this.subscriptionAdvertisers = this.filterService.advertisers.subscribe(
-            advertisersArray => {
-                //Set all to by default to default state DEFAULT_FILTER_STATE
-                this.advertisers = advertisersArray.map((e) => {
-                    if(e.isSelectable==true){ e.isSelected=this.DEFAULT_FILTER_STATE; }
-                    else{ e.isSelected=false; }
-                    return e;
-                });
-            }
-        );
-        this.subscriptionPartners = this.filterService.partners.subscribe(
-            partnersArray => {
-                //Set all to by default to default state DEFAULT_FILTER_STATE
-                this.partners = partnersArray.map((e) => {
-                    if(e.isSelectable==true){ e.isSelected=this.DEFAULT_FILTER_STATE; }
-                    else{ e.isSelected=false; }
-                    return e;
-                });
-            }
-        );
-        this.subscriptionKpis= this.filterService.kpis.subscribe(
-            kpisArray => {
-                //Set all to by default to default state DEFAULT_FILTER_STATE
-                this.kpis = kpisArray.map((e) => {
-                    if(e.isSelectable==true){ e.isSelected=this.DEFAULT_FILTER_STATE; }
-                    else{ e.isSelected=false; }
-                    return e;
-                });
-            }
-        );
-        this.subscriptionMetaCampaigns = this.filterService.metaCampaigns.subscribe(
-            metaCampaignsArray => {
-                //Set all to by default to default state DEFAULT_FILTER_STATE
-                this.metaCampaigns = metaCampaignsArray.map((e) => {
-                    if(e.isSelectable==true){ e.isSelected=this.DEFAULT_FILTER_STATE; }
-                    else{ e.isSelected=false; }
-                    return e;
-                });
-            }
-        );
-    }
+    constructor(private filterService : FilterService) {}
 
     ngOnInit():void{
         this.filterService.initAllFilters();

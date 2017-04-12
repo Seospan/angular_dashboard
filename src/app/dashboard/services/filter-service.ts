@@ -10,8 +10,9 @@ import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class FilterService {
-    DEBUG:boolean = false;
+    DEBUG:boolean = true;
     private debugLog(str){ this.DEBUG && console.log(str); }
+    DEFAULT_FILTER_STATE: boolean = true;
 
     constructor(private http : Http,
         private advertisersService : AdvertiserService,
@@ -22,18 +23,25 @@ export class FilterService {
     }
 
     private showFiltersSource = new Subject<boolean>();
-    private advertisersSource = new Subject<Advertiser[]>();
-    private partnersSource = new Subject<Partner[]>();
-    private kpisSource = new Subject<Kpi[]>();
-    private metaCampaignsSource = new Subject<MetaCampaign[]>();
-
     showFilters = this.showFiltersSource.asObservable();
-    advertisers = this.advertisersSource.asObservable();
-    partners = this.partnersSource.asObservable();
-    kpis = this.kpisSource.asObservable();
-    metaCampaigns = this.metaCampaignsSource.asObservable();
+
+    //Elements of filtering
+    advertisers : Advertiser[];
+    partners : Partner[];
+    kpis : Kpi[];
+    metaCampaigns : MetaCampaign[];
 
     // private helper methods
+
+/*
+//Set all to by default to default state DEFAULT_FILTER_STATE
+
+this.advertisers = advertisersArray.map((e) => {
+    if(e.isSelectable==true){ e.isSelected=this.DEFAULT_FILTER_STATE; }
+    else{ e.isSelected=false; }
+    return e;
+});
+ */
 
     private jwt() {
         // create authorization header with jwt token
@@ -55,11 +63,13 @@ export class FilterService {
                     this.debugLog("RESULT Advertisers");
                     this.debugLog(result);
                     //Return result with all isSelectable set to false by default
-                    this.advertisersSource.next( result.map((e) => {
+                    this.advertisers = result.map((e) => {
                         e.isSelectable=false;
+                        e.isSelected = false;
                         return e;
-                    })
-                );
+                    });
+                    this.debugLog("ADVERTISERS");
+                    this.debugLog(this.advertisers);
             },
         );
     }
@@ -70,11 +80,11 @@ export class FilterService {
                     this.debugLog("RESULT Partners");
                     this.debugLog(result);
                     //Return result with all isSelectable set to false by default
-                    this.partnersSource.next( result.map((e) => {
+                    this.partners = result.map((e) => {
                         e.isSelectable=false;
+                        e.isSelected = false;
                         return e;
-                    })
-                );
+                    });
             },
         );
     }
@@ -85,11 +95,11 @@ export class FilterService {
                     this.debugLog("RESULT Kpis");
                     this.debugLog(result);
                     //Return result with all isSelectable set to false by default
-                    this.kpisSource.next( result.map((e) => {
+                    this.kpis = result.map((e) => {
                         e.isSelectable=false;
+                        e.isSelected = false;
                         return e;
-                    })
-                );
+                    });
             },
         );
     }
@@ -100,11 +110,11 @@ export class FilterService {
                     this.debugLog("RESULT MetaCampaigns");
                     this.debugLog(result);
                     //Return result with all isSelectable set to false by default
-                    this.metaCampaignsSource.next( result.map((e) => {
-                        e.isSelectable=false;
+                    this.metaCampaigns = result.map((e) => {
+                        e.isSelectable=true;
+                        e.isSelected = false;
                         return e;
-                    })
-                );
+                    });
             },
         );
     }

@@ -18,32 +18,10 @@ export class FraudDetectorComponent implements OnInit {
     DEBUG: boolean = true;
     private debugLog(str){ this.DEBUG && console.log(str); }
 
-    //Elements of filtering
-    advertisers : Advertiser[];
-    subscriptionAdvertisers : Subscription;
-    partners : Partner[];
-    subscriptionPartners : Subscription;
-    kpis : Kpi[];
-    subscriptionKpis : Subscription;
-    metaCampaigns : MetaCampaign[];
-    subscriptionMetaCampaigns : Subscription;
-
     dataFraudDetector : any;
     subscriptionDataFraudDetector : Subscription;
 
     constructor(private filterService : FilterService, private dataFraudDetectorService : DataFaudDetectorService){
-        this.subscriptionAdvertisers = this.filterService.advertisers.subscribe(
-            advertisersArray => { this.advertisers = advertisersArray; this.debugLog("Advertisers updated in fraud detector component"); this.debugLog(this.advertisers);  }
-        );
-        this.subscriptionPartners = this.filterService.partners.subscribe(
-            partnersArray => { this.partners = partnersArray; this.debugLog("partners updated in fraud detector component"); this.debugLog(this.partners);  }
-        );
-        this.subscriptionKpis = this.filterService.kpis.subscribe(
-            kpisArray => { this.kpis = kpisArray; this.debugLog("Kpis updated in fraud detector component"); this.debugLog(this.kpis);  }
-        );
-        this.subscriptionMetaCampaigns = this.filterService.metaCampaigns.subscribe(
-            metaCampaignsArray => { this.metaCampaigns = metaCampaignsArray; this.debugLog("MetaCampaigns updated in fraud detector component"); this.debugLog(this.metaCampaigns);  }
-        );
         this.subscriptionDataFraudDetector = this.dataFraudDetectorService.dataFraudDetector.subscribe(
             dataFraudDetectorRaw => {
                 //this.dataFraudDetector = dataFraudDetectorRaw;

@@ -4,7 +4,7 @@
       <section>
         <div (click)="changeAllFilter(advertisers,true)"> Check all </div>
         <div (click)="changeAllFilter(advertisers,false)"> Uncheck all </div>
-        <div *ngFor="let advertiser of advertisers">
+        <div *ngFor="let advertiser of filterService.advertisers">
             <md-checkbox
                   *ngIf="advertiser.isSelectable"
                   [(ngModel)]="advertiser.isSelected"
@@ -24,7 +24,7 @@
       <section>
         <div (click)="changeAllFilter(partners,true)"> Check all </div>
         <div (click)="changeAllFilter(partners,false)"> Uncheck all </div>
-        <div *ngFor="let partner of partners">
+        <div *ngFor="let partner of filterService.partners">
           <md-checkbox
                 *ngIf="partner.isSelectable"
                 [(ngModel)]="partner.isSelected"
@@ -44,7 +44,7 @@
       <section>
         <div (click)="changeAllFilter(kpis,true)"> Check all </div>
         <div (click)="changeAllFilter(kpis,false)"> Uncheck all </div>
-        <div *ngFor="let kpi of kpis">
+        <div *ngFor="let kpi of filterService.kpis">
           <md-checkbox
                 *ngIf="kpi.isSelectable"
                 [(ngModel)]="kpi.isSelected"
@@ -64,7 +64,7 @@
       <section>
         <div (click)="changeAllFilter(metaCampaigns,true)"> Check all </div>
         <div (click)="changeAllFilter(metaCampaigns,false)"> Uncheck all </div>
-        <div *ngFor="let metaCampaign of metaCampaigns">
+        <div *ngFor="let metaCampaign of filterService.metaCampaigns">
           <md-checkbox
                 *ngIf="metaCampaign.isSelectable"
                 [(ngModel)]="metaCampaign.isSelected"
