@@ -5,13 +5,14 @@
         <div (click)="changeAllFilter(advertisers,true)"> Check all </div>
         <div (click)="changeAllFilter(advertisers,false)"> Uncheck all </div>
         <div *ngFor="let advertiser of advertisers">
-          <md-checkbox
-                [(ngModel)]="advertiser.isSelected"
-                [ngClass]="{'active' : advertiser.isSelected}"
-                [align]="start"
-                >
-              {{ advertiser.common_name }} : {{advertiser.isSelected}} ( {{advertiser.sizmek_id}})
-            </md-checkbox>
+            <md-checkbox
+                  *ngIf="advertiser.isSelectable"
+                  [(ngModel)]="advertiser.isSelected"
+                  [ngClass]="{'active' : advertiser.isSelected}"
+                  [align]="start"
+                  >
+                {{ advertiser.common_name }} : {{advertiser.isSelected}} ( {{advertiser.sizmek_id}})
+              </md-checkbox>
         </div>
       </section>
   </md-card-content>
@@ -25,6 +26,7 @@
         <div (click)="changeAllFilter(partners,false)"> Uncheck all </div>
         <div *ngFor="let partner of partners">
           <md-checkbox
+                *ngIf="partner.isSelectable"
                 [(ngModel)]="partner.isSelected"
                 [ngClass]="{'active' : partner.isSelected}"
                 [align]="start"
@@ -44,6 +46,7 @@
         <div (click)="changeAllFilter(kpis,false)"> Uncheck all </div>
         <div *ngFor="let kpi of kpis">
           <md-checkbox
+                *ngIf="kpi.isSelectable"
                 [(ngModel)]="kpi.isSelected"
                 [ngClass]="{'active' : kpi.isSelected}"
                 [align]="start"
@@ -63,6 +66,7 @@
         <div (click)="changeAllFilter(metaCampaigns,false)"> Uncheck all </div>
         <div *ngFor="let metaCampaign of metaCampaigns">
           <md-checkbox
+                *ngIf="metaCampaign.isSelectable"
                 [(ngModel)]="metaCampaign.isSelected"
                 [ngClass]="{'active' : metaCampaign.isSelected}"
                 [align]="start"

@@ -8,4 +8,5 @@ export class Kpi{
   product : Product;
   //kpiAction : KpiAction;
   isSelected : boolean;
+  isSelectable : boolean;
 }

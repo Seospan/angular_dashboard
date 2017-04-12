@@ -5,4 +5,5 @@ export class MetaCampaign{
   name: string;
   product: Product;
   isSelected : boolean;
+  isSelectable : boolean;
 }

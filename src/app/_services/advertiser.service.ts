@@ -24,7 +24,7 @@ export class AdvertiserService {
      * @method getAll
      * @return {Promise} Promise for the list of all the Advertisers from the API
      */
-    getAll():Promise<any[] | Advertiser[]> {
+    getAll():Promise<Advertiser[]> {
         return this.http.get(this.config.apiRequestUrl + this.ENDPOINT_URL, this.jwt())
             .toPromise()
             .then(response => {
@@ -34,7 +34,7 @@ export class AdvertiserService {
                 console.log("error : "+error.json().detail);
                 console.log(error.json());
                 this.router.navigate(['/login'], { queryParams: { returnUrl : window.location.pathname }});
-                return [];
+                return [] as Advertiser[];
             });
     }
 

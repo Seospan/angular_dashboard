@@ -24,7 +24,7 @@ export class MetaCampaignService {
      * @method getAll
      * @return {Promise} Promise for the list of all the MetaCampaigns from the API
      */
-    getAll():Promise<any[] | MetaCampaign[]> {
+    getAll():Promise<MetaCampaign[]> {
         return this.http.get(this.config.apiRequestUrl + this.ENDPOINT_URL, this.jwt())
             .toPromise()
             .then(response => {

@@ -24,7 +24,7 @@ export class PartnerService {
      * @method getAll
      * @return {Promise} Promise for the list of all the Partners from the API
      */
-    getAll():Promise<any[] | Partner[]> {
+    getAll():Promise<Partner[]> {
         return this.http.get(this.config.apiRequestUrl + this.ENDPOINT_URL, this.jwt())
             .toPromise()
             .then(response => {

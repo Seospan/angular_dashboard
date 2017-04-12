@@ -49,51 +49,73 @@ export class FilterService {
         return val;
     }
 
-    setAdvertisers():void{
+    initAdvertisers():void{
         this.advertisersService.getAll().then(
                 result => {
                     this.debugLog("RESULT Advertisers");
                     this.debugLog(result);
-                    this.advertisersSource.next( result );
+                    //Return result with all isSelectable set to false by default
+                    this.advertisersSource.next( result.map((e) => {
+                        e.isSelectable=false;
+                        return e;
+                    })
+                );
             },
         );
     }
 
-    setPartners():void{
+    initPartners():void{
         this.partnersService.getAll().then(
                 result => {
                     this.debugLog("RESULT Partners");
                     this.debugLog(result);
-                    this.partnersSource.next( result );
+                    //Return result with all isSelectable set to false by default
+                    this.partnersSource.next( result.map((e) => {
+                        e.isSelectable=false;
+                        return e;
+                    })
+                );
             },
         );
     }
 
-    setKpis():void{
+    initKpis():void{
         this.kpisService.getAll().then(
                 result => {
                     this.debugLog("RESULT Kpis");
                     this.debugLog(result);
-                    this.kpisSource.next( result );
+                    //Return result with all isSelectable set to false by default
+                    this.kpisSource.next( result.map((e) => {
+                        e.isSelectable=false;
+                        return e;
+                    })
+                );
             },
         );
     }
 
-    setMetaCampaigns():void{
+    initMetaCampaigns():void{
         this.metaCampaignsService.getAll().then(
                 result => {
                     this.debugLog("RESULT MetaCampaigns");
                     this.debugLog(result);
-                    this.metaCampaignsSource.next( result );
+                    //Return result with all isSelectable set to false by default
+                    this.metaCampaignsSource.next( result.map((e) => {
+                        e.isSelectable=false;
+                        return e;
+                    })
+                );
             },
         );
     }
 
-    setAllFilters():void{
-      this.setAdvertisers();
-      this.setPartners();
-      this.setKpis();
-      this.setMetaCampaigns();
+//    setSelectableAdvertisers()
+
+    initAllFilters():void{
+      this.initAdvertisers();
+      this.initPartners();
+      this.initKpis();
+      this.initMetaCampaigns();
     }
 
 }

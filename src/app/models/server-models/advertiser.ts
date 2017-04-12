@@ -4,4 +4,5 @@ export class Advertiser{
     name : string;
     country_code : string;
     isSelected : boolean;
+    isSelectable : boolean;
 }

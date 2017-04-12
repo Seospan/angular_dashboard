@@ -111,9 +111,4 @@ export class FraudDetectorComponent implements OnInit {
         this.dataFraudDetectorService.setDataFraudDetector();
     }
 
-  /*disableAdvertiser(advId){
-    this.advertisers = this.advertisers.map(function(e,index){ if(e.sizmekId == advId){ e.isSelected=false; } return e; });
-    //this.filterService.setAdvertisersTo(this.advertisers);
-  }*/
-
 }

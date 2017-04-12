@@ -6,6 +6,7 @@ import {  } from '../../_services/index';
 
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { UserService } from '../../_services/user.service';
+import { FilterService } from '../services/filter-service';
 import { AppConfig } from '../../app.config';
 
 import 'rxjs/add/operator/toPromise';
@@ -20,7 +21,10 @@ export class DataFaudDetectorService {
     private dataFraudDetectorSource = new Subject<JSON>();
     dataFraudDetector = this.dataFraudDetectorSource.asObservable();
 
-    constructor(private http : Http, private config: AppConfig, private router: Router) {
+    constructor(private http : Http,
+        private config: AppConfig,
+        private router: Router,
+        private filterService : FilterService) {
     }
 
     /**
@@ -59,10 +63,12 @@ export class DataFaudDetectorService {
 
     /**
      * Get data from API with @getDataFraudDetector and injects it in the observable dataFraudDetector
+     *
      * @method setDataFraudDetector
      */
     setDataFraudDetector():void{
         this.getDataFraudDetector().then(
+            
             result => {
                 this.dataFraudDetectorSource.next( result );
             },

@@ -24,7 +24,7 @@ export class KpiService {
      * @method getAll
      * @return {Promise} Promise for the list of all the Kpis from the API
      */
-    getAll():Promise<any[] | Kpi[]> {
+    getAll():Promise<Kpi[]> {
         return this.http.get(this.config.apiRequestUrl + this.ENDPOINT_URL, this.jwt())
             .toPromise()
             .then(response => {
