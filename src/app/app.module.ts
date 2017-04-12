@@ -24,6 +24,8 @@ import { NotFoundComponent } from './not-found/not-found.component'
 import { RouterStateSnapshot } from '@angular/router';
 import { MaterialModule } from '@angular/material';
 
+import { DatePickerModule } from 'ng2-datepicker';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,6 +42,7 @@ import { MaterialModule } from '@angular/material';
     MaterialModule,
     ReactiveFormsModule,
     CovalentCoreModule.forRoot(),
+    DatePickerModule,
 //    routing,
     HomeModule,
     //DashboardModule,
