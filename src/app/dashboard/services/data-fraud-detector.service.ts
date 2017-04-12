@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router} from '@angular/router';
+import { BehaviorSubject }    from 'rxjs/BehaviorSubject';
 import { Subject }    from 'rxjs/Subject';
+import { Subscription }   from 'rxjs/Subscription';
 
 import {  } from '../../_services/index';
 
@@ -13,18 +15,35 @@ import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class DataFaudDetectorService {
-    DEBUG: boolean = false;
+    DEBUG: boolean = true;
     private debugLog(str){ this.DEBUG && console.log(str); }
 
     ENDPOINT_URL : string = "/aggregated_suspicious_data/";
 
-    private dataFraudDetectorSource = new Subject<JSON>();
-    dataFraudDetector = this.dataFraudDetectorSource.asObservable();
+    dataFraudDetector = new Subject<JSON>();
+    dataFiltersSubscription : Subscription;
 
     constructor(private http : Http,
         private config: AppConfig,
         private router: Router,
         private filterService : FilterService) {
+            this.debugLog("Constructor datafrauddetectorservice");
+            this.dataFiltersSubscription = this.filterService.dataFraudDetectorRequest.subscribe({
+                next : (elems) => {
+                        console.log("Getting data from subscription");
+                        this.getDataFraudDetector(elems).then(
+                            result => {
+                                this.debugLog("Data from getDataFrausDetector to dataFraudDetector :");
+                                this.debugLog(result);
+                                this.dataFraudDetector.next(result);
+                            },
+                        );
+
+                },
+                error: (err) => console.error(err),
+            });
+            console.log(this.dataFiltersSubscription);
+
     }
 
     /**
@@ -40,11 +59,11 @@ export class DataFaudDetectorService {
      *                                 metacampaign_id
      *                                 partner_id
      */
-    getDataFraudDetector():Promise<JSON> {
+    getDataFraudDetector({startDate, endDate, attributionModelId}):Promise<JSON> {
         return this.http.post(this.config.apiRequestUrl + this.ENDPOINT_URL, [{
-                                                                                    "start_date": "2016-01-01",
-                                                                                    "end_date": "2016-02-01",
-                                                                                    "attribution_model": "default"
+                                                                                    "start_date": startDate,
+                                                                                    "end_date": endDate,
+                                                                                    "attribution_model": attributionModelId
                                                                                 }]
     , this.jwt())
             .toPromise()
@@ -66,14 +85,15 @@ export class DataFaudDetectorService {
      *
      * @method setDataFraudDetector
      */
-    setDataFraudDetector():void{
+    /*private setDataFraudDetector():JSON{
         this.getDataFraudDetector().then(
-            
             result => {
-                this.dataFraudDetectorSource.next( result );
+                this.debugLog("DATA");
+                this.debugLog(this.dataFraudDetector);
+                return result;
             },
         );
-    }
+    }*/
 
     // private helper methods
 

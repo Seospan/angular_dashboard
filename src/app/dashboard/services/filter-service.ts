@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subject }    from 'rxjs/Subject';
+import { BehaviorSubject }    from 'rxjs/BehaviorSubject';
 import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index'
 import { AuthenticationService, AdvertiserService, PartnerService, KpiService, MetaCampaignService } from '../../_services/index';
 
@@ -8,19 +9,14 @@ import { UserService } from '../../_services/user.service';
 
 import 'rxjs/add/operator/toPromise';
 
+import { DateModel } from 'ng2-datepicker';
+
 @Injectable()
 export class FilterService {
-    DEBUG:boolean = true;
+    DEBUG : boolean = true;
     private debugLog(str){ this.DEBUG && console.log(str); }
-    DEFAULT_FILTER_STATE: boolean = true;
-
-    constructor(private http : Http,
-        private advertisersService : AdvertiserService,
-        private partnersService : PartnerService,
-        private kpisService : KpiService,
-        private metaCampaignsService : MetaCampaignService,
-     ) {
-    }
+    DEFAULT_FILTER_STATE : boolean = true;
+    DEFAULT_ATTRIBUTION_MODEL : string = "default";
 
     private showFiltersSource = new Subject<boolean>();
     showFilters = this.showFiltersSource.asObservable();
@@ -30,6 +26,31 @@ export class FilterService {
     partners : Partner[];
     kpis : Kpi[];
     metaCampaigns : MetaCampaign[];
+
+    private dateRange : {startDate, endDate};
+
+    attributionModelId : string;
+
+    dataFraudDetectorRequest : BehaviorSubject<{startDate, endDate, attributionModelId}>;
+
+    constructor(private http : Http,
+        private advertisersService : AdvertiserService,
+        private partnersService : PartnerService,
+        private kpisService : KpiService,
+        private metaCampaignsService : MetaCampaignService,
+     ) {
+         let days = 86400000;
+         let today = Date.now();
+         this.dateRange = {
+             startDate : new Date(today - (8*days)),
+             endDate : new Date(today - (1*days)),
+         };
+         this.attributionModelId = this.DEFAULT_ATTRIBUTION_MODEL;
+         this.dataFraudDetectorRequest = new BehaviorSubject<{startDate, endDate, attributionModelId}>(
+             {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, attributionModelId : this.attributionModelId}
+         );
+         this.debugLog("Constructor filter service w dates "+this.dateRange.startDate+" "+this.dateRange.endDate);
+    }
 
     // private helper methods
 
@@ -64,7 +85,7 @@ this.advertisers = advertisersArray.map((e) => {
                     this.debugLog(result);
                     //Return result with all isSelectable set to false by default
                     this.advertisers = result.map((e) => {
-                        e.isSelectable=false;
+                        e.isSelectable=true;
                         e.isSelected = false;
                         return e;
                     });
@@ -119,6 +140,21 @@ this.advertisers = advertisersArray.map((e) => {
         );
     }
 
+    getDateRange(){
+        return this.dateRange;
+    }
+
+    setDateRange(dateRange){
+        this.dateRange = dateRange;
+        this.debugLog("Setter from dateRange attributes triggers data recalculation");
+        this.dataFraudDetectorRequest.next(
+            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, attributionModelId : this.attributionModelId}
+        );
+    }
+
+    dateChange(){
+        console.log("DATE CCHANGE");
+    }
 //    setSelectableAdvertisers()
 
     initAllFilters():void{

@@ -23,6 +23,10 @@ import { AdvertiserService,
     } from '../_services/index';
 
 import { FiltersComponent } from './filters/filters.component';
+import { DatePickerModule } from 'ng2-datepicker';
+import { NgDateRangePickerModule } from 'ng-daterangepicker';
+import { Daterangepicker } from 'ng2-daterangepicker';
+
 
 @NgModule({
   imports: [
@@ -31,7 +35,9 @@ import { FiltersComponent } from './filters/filters.component';
     CovalentHighlightModule,
     DashboardRoutingModule,
     CovalentDataTableModule.forRoot(),
-
+    DatePickerModule,
+    NgDateRangePickerModule,
+    Daterangepicker,
   ],
   declarations: [
     DashboardComponent,

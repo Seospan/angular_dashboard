@@ -18,11 +18,10 @@ export class FraudDetectorComponent implements OnInit {
     DEBUG: boolean = true;
     private debugLog(str){ this.DEBUG && console.log(str); }
 
-    dataFraudDetector : any;
     subscriptionDataFraudDetector : Subscription;
 
     constructor(private filterService : FilterService, private dataFraudDetectorService : DataFaudDetectorService){
-        this.subscriptionDataFraudDetector = this.dataFraudDetectorService.dataFraudDetector.subscribe(
+        /*this.subscriptionDataFraudDetector = this.dataFraudDetectorService.dataFraudDetector.subscribe(
             dataFraudDetectorRaw => {
                 //this.dataFraudDetector = dataFraudDetectorRaw;
                 this.debugLog("Raw Data");
@@ -48,37 +47,11 @@ export class FraudDetectorComponent implements OnInit {
                         console.error(rejected);
                     });
 
-
-                //
-                /*this.debugLog("!!!!!");
-                /*this.debugLog("!!!!!");
-                this.dataFraudDetector = crossfilter(dataFraudDetectorRaw);
-                var dataFilterByAdvertiserDimension;
-
-                this.debugLog("SIZE1");
-                this.debugLog(this.dataFraudDetector.size());
-
-                let advertiserFilter = [50631, 50635];
-                if(advertiserFilter.length > 0) {
-                    this.debugLog("entering crossfilter advertiser filter");
-                    dataFilterByAdvertiserDimension = this.dataFraudDetector.dimension(function(d) { return d.advertiser_id });
-                    var dataSet = dataFilterByAdvertiserDimension.filterFunction(function(d) { return (advertiserFilter.indexOf(d)  !== -1) }).top(Infinity);
-
-                    var dataDateDimension = this.dataFraudDetector.dimension(function(d) { return d.conversion_date });
-                    var conversionsByDate = dataDateDimension.group().reduceSum(function(d) { return d.conversions}).all();
-
-                    this.debugLog("SIZE");
-                    this.debugLog(this.dataFraudDetector.size());
-                    this.debugLog(dataSet);
-                    this.debugLog("Dataset by date");
-                    this.debugLog(conversionsByDate);
-                }*/
-
                 this.debugLog("DataFraudDetector updated in fraud detector component");
                 this.debugLog(this.dataFraudDetector);
 
             }
-        );
+        );*/
         this.debugLog("constructor fraud detector");
     }
 
@@ -86,7 +59,6 @@ export class FraudDetectorComponent implements OnInit {
         this.debugLog("getting data1");
         this.filterService.setShowFilters(true);
         this.debugLog("getting data");
-        this.dataFraudDetectorService.setDataFraudDetector();
     }
 
 }
