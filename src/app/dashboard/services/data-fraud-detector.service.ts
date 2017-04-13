@@ -12,6 +12,7 @@ import { FilterService } from '../services/filter-service';
 import { AppConfig } from '../../app.config';
 
 import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/combineLatest';
 
 @Injectable()
 export class DataFaudDetectorService {
@@ -21,7 +22,14 @@ export class DataFaudDetectorService {
     ENDPOINT_URL : string = "/aggregated_suspicious_data/";
 
     dataFraudDetector = new Subject<JSON>();
+
+    /**
+     * Subscribes to dataFraudDetectorRequest (elements of filtering) and pushes it to dataFraudDetector (data)
+     */
     dataFiltersSubscription : Subscription;
+    /**
+     */
+    dataFraudDetectorSubscription : Subscription;
 
     constructor(private http : Http,
         private config: AppConfig,
@@ -33,7 +41,7 @@ export class DataFaudDetectorService {
                         console.log("Getting data from subscription");
                         this.getDataFraudDetector(elems).then(
                             result => {
-                                this.debugLog("Data from getDataFrausDetector to dataFraudDetector :");
+                                this.debugLog("Data from getDataFraudDetector to dataFraudDetector :");
                                 this.debugLog(result);
                                 this.dataFraudDetector.next(result);
                             },
@@ -42,7 +50,36 @@ export class DataFaudDetectorService {
                 },
                 error: (err) => console.error(err),
             });
-            console.log(this.dataFiltersSubscription);
+            this.dataFraudDetectorSubscription = this.dataFraudDetector
+                .combineLatest(
+                    this.filterService.advertisersSubject,
+                    this.filterService.partnersSubject,
+                    this.filterService.kpisSubject,
+                    this.filterService.metaCampaignsSubject,
+                ).subscribe(
+                    {
+                        next : (latestValues) => {
+                                let dataFraudDetectorValue = latestValues[0];
+                                let allAdvertisersFromSubjectValue = latestValues[1];
+                                let allPartnersFromSubjectValue = latestValues[2];
+                                let allKpisFromSubjectValue = latestValues[3];
+                                let allMetaCampaignsFromSubjectValue = latestValues[4];
+                                //Execute universe and update filters
+                                this.filterService.setSelectableFilters(
+                                    [145464,145063],
+                                    [102,104,105],
+                                    [4,5,6,7],
+                                    [1,3,5,7],
+                                    allAdvertisersFromSubjectValue,
+                                    allPartnersFromSubjectValue,
+                                    allKpisFromSubjectValue,
+                                    allMetaCampaignsFromSubjectValue,
+                                );
+
+                        },
+                        error: (err) => console.error(err),
+                    }
+                );
 
     }
 

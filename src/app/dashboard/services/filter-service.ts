@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject }    from 'rxjs/Subject';
 import { BehaviorSubject }    from 'rxjs/BehaviorSubject';
+import { Subscription }   from 'rxjs/Subscription';
 import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index'
 import { AuthenticationService, AdvertiserService, PartnerService, KpiService, MetaCampaignService } from '../../_services/index';
 
@@ -22,10 +23,34 @@ export class FilterService {
     showFilters = this.showFiltersSource.asObservable();
 
     //Elements of filtering
-    advertisers : Advertiser[];
-    partners : Partner[];
-    kpis : Kpi[];
-    metaCampaigns : MetaCampaign[];
+    private _advertisers : Advertiser[];
+    private _partners : Partner[];
+    private _kpis : Kpi[];
+    private _metaCampaigns : MetaCampaign[];
+
+    get advertisers(){ return this._advertisers; }
+    set advertisers(val){ this.debugLog("SETTER ADV"); this._advertisers = val; }
+
+    get partners(){ return this._partners; }
+    set partners(val){ this.debugLog("SETTER PARTNER"); this._partners = val; }
+
+    get kpis(){ return this._kpis; }
+    set kpis(val){ this.debugLog("SETTER KPI"); this._kpis = val; }
+
+    get metaCampaigns(){ return this._metaCampaigns; }
+    set metaCampaigns(val){ this.debugLog("SETTER METAC"); this._metaCampaigns = val; }
+
+    /**
+     * Filters subjects :
+     * Used to combine with data. If initFilteer did edit the attribute, dataFraudDetectorService
+     * wouldn't be able to verify filters are already instanciated before mapping the selectable filters
+     * (Depending of spcific dataset)
+     * Filter attribute setting is delegated to DataFaudDetectorService with combineLatest
+     */
+    advertisersSubject = new Subject<Advertiser[]>();
+    partnersSubject = new Subject<Partner[]>();
+    kpisSubject = new Subject<Kpi[]>();
+    metaCampaignsSubject = new Subject<MetaCampaign[]>();
 
     private dateRange : {startDate, endDate};
 
@@ -50,19 +75,14 @@ export class FilterService {
              {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, attributionModelId : this.attributionModelId}
          );
          this.debugLog("Constructor filter service w dates "+this.dateRange.startDate+" "+this.dateRange.endDate);
+         this.advertisers = [];
     }
 
     // private helper methods
 
-/*
-//Set all to by default to default state DEFAULT_FILTER_STATE
-
-this.advertisers = advertisersArray.map((e) => {
-    if(e.isSelectable==true){ e.isSelected=this.DEFAULT_FILTER_STATE; }
-    else{ e.isSelected=false; }
-    return e;
-});
- */
+    test(){
+        console.log("TEST");
+    }
 
     private jwt() {
         // create authorization header with jwt token
@@ -83,14 +103,16 @@ this.advertisers = advertisersArray.map((e) => {
                 result => {
                     this.debugLog("RESULT Advertisers");
                     this.debugLog(result);
-                    //Return result with all isSelectable set to false by default
-                    this.advertisers = result.map((e) => {
-                        e.isSelectable=true;
-                        e.isSelected = false;
+                    //Transforms result with all isSelectable set to false by default
+                    let advertisers = result.map((e) => {
+                        e.isSelectable = false;
+                        e.isSelected = true;
                         return e;
                     });
-                    this.debugLog("ADVERTISERS");
-                    this.debugLog(this.advertisers);
+                    //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
+                    this.advertisersSubject.next(advertisers);
+                    this.debugLog("ADVERTISERS sent to Subject");
+                    this.debugLog(advertisers);
             },
         );
     }
@@ -100,12 +122,16 @@ this.advertisers = advertisersArray.map((e) => {
                 result => {
                     this.debugLog("RESULT Partners");
                     this.debugLog(result);
-                    //Return result with all isSelectable set to false by default
-                    this.partners = result.map((e) => {
-                        e.isSelectable=false;
-                        e.isSelected = false;
+                    //Transforms result with all isSelectable set to false by default
+                    let partners = result.map((e) => {
+                        e.isSelectable = false;
+                        e.isSelected = true;
                         return e;
                     });
+                    //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
+                    this.partnersSubject.next(partners);
+                    this.debugLog("PARTNERS sent to Subject");
+                    this.debugLog(partners);
             },
         );
     }
@@ -115,12 +141,16 @@ this.advertisers = advertisersArray.map((e) => {
                 result => {
                     this.debugLog("RESULT Kpis");
                     this.debugLog(result);
-                    //Return result with all isSelectable set to false by default
-                    this.kpis = result.map((e) => {
-                        e.isSelectable=false;
-                        e.isSelected = false;
+                    //Transforms result with all isSelectable set to false by default
+                    let kpis = result.map((e) => {
+                        e.isSelectable = false;
+                        e.isSelected = true;
                         return e;
                     });
+                    //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
+                    this.kpisSubject.next(kpis);
+                    this.debugLog("KPIS sent to Subject");
+                    this.debugLog(kpis);
             },
         );
     }
@@ -130,12 +160,16 @@ this.advertisers = advertisersArray.map((e) => {
                 result => {
                     this.debugLog("RESULT MetaCampaigns");
                     this.debugLog(result);
-                    //Return result with all isSelectable set to false by default
-                    this.metaCampaigns = result.map((e) => {
-                        e.isSelectable=true;
-                        e.isSelected = false;
+                    //Transforms result with all isSelectable set to false by default
+                    let metaCampaigns = result.map((e) => {
+                        e.isSelectable = false;
+                        e.isSelected = true;
                         return e;
                     });
+                    //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
+                    this.metaCampaignsSubject.next(metaCampaigns);
+                    this.debugLog("METACAMPAIGNS sent to Subject");
+                    this.debugLog(metaCampaigns);
             },
         );
     }
@@ -152,10 +186,53 @@ this.advertisers = advertisersArray.map((e) => {
         );
     }
 
-    dateChange(){
-        console.log("DATE CCHANGE");
-    }
-//    setSelectableAdvertisers()
+    /*dateChange(){
+        console.log("DATE CHANGE");
+    }*/
+
+   setSelectableFilters(
+       selectableAdvertisers:number[],
+       selectablePartners:number[],
+       selectableKpis:number[],
+       selectableMetaCampaigns:number[],
+       allAdvertisers:Advertiser[],
+       allPartners:Partner[],
+       allKpis:Kpi[],
+       allMetaCampaigns:MetaCampaign[],
+   ):void{
+       /*if(this.advertisersSubscription){ this.advertisersSubscription.unsubscribe(); }
+       this.advertisersSubscription = this.advertisersSubject.subscribe(
+           result => {
+               console.log("Intermediate");
+               console.log(result);
+               console.log(this.advertisers);
+               this.advertisers = result.map(function(e){
+                   console.log("ADV ID");
+                   console.log(advId.indexOf(e.sizmek_id));
+                   if(advId.indexOf(e.sizmek_id)!=-1){ e.isSelectable = true; return e; }
+                   else{ return e; }
+               });
+            }
+       );*/
+       console.log("Intermediate");
+       console.log(this.advertisers);
+       this.advertisers = allAdvertisers.map(function(e){
+           if(selectableAdvertisers.indexOf(e.sizmek_id)!=-1){ e.isSelectable = true; return e; }
+           else{ return e; }
+       });
+       this.partners = allPartners.map(function(e){
+           if(selectablePartners.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
+           else{ return e; }
+       });
+       this.kpis = allKpis.map(function(e){
+           if(selectableKpis.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
+           else{ return e; }
+       });
+       this.metaCampaigns = allMetaCampaigns.map(function(e){
+           if(selectableMetaCampaigns.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
+           else{ return e; }
+       });
+   }
 
     initAllFilters():void{
       this.initAdvertisers();
