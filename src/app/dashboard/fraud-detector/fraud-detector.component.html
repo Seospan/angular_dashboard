@@ -1,5 +1,6 @@
 <md-card-subtitle>fraud-detector is loaded</md-card-subtitle>
 
+<!--
 Active advertisers : <br />
 <div *ngFor="let advertiser of filterService.advertisers">
   <span  *ngIf="advertiser.isSelected && advertiser.isSelectable" >
@@ -28,10 +29,6 @@ Active MetaCampaings : <br />
   </span>
 </div>
 DATA : <br />
-<!--<div *ngFor="let line of dataFraudDetector">
-  <span>
-    <div>{{ line.advertiser_id }}</div>
-  </span>
-</div>-->
+-->
 
 <app-fd-groupby-datatable></app-fd-groupby-datatable>

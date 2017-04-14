@@ -6,8 +6,6 @@ import { Subscription }   from 'rxjs/Subscription';
 
 declare var universe: any;
 import '../../../../assets/js/universe.min.js';
-//declare var crossfilter: any;
-//import '../../../../assets/js/crossfilter.min.js';
 
 @Component({
   selector: 'app-fraud-detector',
@@ -21,37 +19,6 @@ export class FraudDetectorComponent implements OnInit {
     subscriptionDataFraudDetector : Subscription;
 
     constructor(private filterService : FilterService, private dataFraudDetectorService : DataFaudDetectorService){
-        /*this.subscriptionDataFraudDetector = this.dataFraudDetectorService.dataFraudDetector.subscribe(
-            dataFraudDetectorRaw => {
-                //this.dataFraudDetector = dataFraudDetectorRaw;
-                this.debugLog("Raw Data");
-                this.debugLog(dataFraudDetectorRaw);
-
-                universe(dataFraudDetectorRaw)
-                    .then(myUniverse => {
-                        this.debugLog("THIS");
-                        return myUniverse.filter('advertiser_id',50629);
-                    })
-                    .then(myUniverse => {
-                        return myUniverse.query({
-                            groupBy: 'conversion_date',
-                            select: {$sum : 'conversions'}
-                        });
-                    }).then(res => {
-                        this.debugLog("Universe");
-                        this.debugLog(res.data);
-                        this.dataFraudDetector = res;
-                    })
-                    .catch(function(rejected){
-                        console.error("PROMISE REJECTED : ");
-                        console.error(rejected);
-                    });
-
-                this.debugLog("DataFraudDetector updated in fraud detector component");
-                this.debugLog(this.dataFraudDetector);
-
-            }
-        );*/
         this.debugLog("constructor fraud detector");
     }
 

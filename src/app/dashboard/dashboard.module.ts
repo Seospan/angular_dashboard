@@ -5,10 +5,10 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 
 import { CovalentCoreModule } from '@covalent/core';
 import { CovalentHighlightModule } from '@covalent/highlight';
+import { CovalentDataTableModule } from '@covalent/core';
 
 import { DashboardComponent } from './dashboard.component';
 
-import { CovalentDataTableModule } from '@covalent/core';
 import { FraudDetectorComponent } from './fraud-detector/fraud-detector.component';
 import { MultiAttributionComponent } from './multi-attribution/multi-attribution.component';
 import { DefaultComponent } from './default/default.component';
