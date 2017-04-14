@@ -5,3 +5,4 @@ export * from './kpi'
 export * from './meta-campaign';
 export * from './partner';
 export * from './product';
+export * from './attribution-model';

@@ -108,11 +108,11 @@ export class DataFaudDetectorService {
      *                                 metacampaign_id
      *                                 partner_id
      */
-    getDataFraudDetector({startDate, endDate, attributionModelId}):Promise<FraudDataElem[]> {
+    getDataFraudDetector({startDate, endDate, selectedAttributionModelId}):Promise<FraudDataElem[]> {
         return this.http.post(this.config.apiRequestUrl + this.ENDPOINT_URL, [{
                                                                                     "start_date": startDate,
                                                                                     "end_date": endDate,
-                                                                                    "attribution_model": attributionModelId
+                                                                                    "attribution_model": selectedAttributionModelId
                                                                                 }]
     , this.jwt())
             .toPromise()

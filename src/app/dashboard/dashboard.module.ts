@@ -20,12 +20,14 @@ import { AdvertiserService,
         PartnerService,
         KpiService,
         MetaCampaignService,
+        AttributionModelService,
     } from '../_services/index';
 
 import { FiltersComponent } from './filters/filters.component';
 import { DatePickerModule } from 'ng2-datepicker';
 import { NgDateRangePickerModule } from 'ng-daterangepicker';
 import { Daterangepicker } from 'ng2-daterangepicker';
+import { FdGroupbyDatatableComponent } from './fd-groupby-datatable/fd-groupby-datatable.component';
 
 
 @NgModule({
@@ -46,6 +48,7 @@ import { Daterangepicker } from 'ng2-daterangepicker';
     DefaultComponent,
     ReportingComponent,
     FiltersComponent,
+    FdGroupbyDatatableComponent,
   ],
   providers: [
     FilterService,
@@ -54,6 +57,7 @@ import { Daterangepicker } from 'ng2-daterangepicker';
     KpiService,
     MetaCampaignService,
     DataFaudDetectorService,
+    AttributionModelService,
   ]
 })
 export class DashboardModule {

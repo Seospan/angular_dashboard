@@ -3,14 +3,13 @@ import { Subject }    from 'rxjs/Subject';
 import { BehaviorSubject }    from 'rxjs/BehaviorSubject';
 import { Subscription }   from 'rxjs/Subscription';
 import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index'
-import { AuthenticationService, AdvertiserService, PartnerService, KpiService, MetaCampaignService } from '../../_services/index';
+import { AttributionModel } from '../../models/server-models/index';
+import { AuthenticationService, AdvertiserService, PartnerService, KpiService, MetaCampaignService, AttributionModelService } from '../../_services/index';
 
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
 import { UserService } from '../../_services/user.service';
 
 import 'rxjs/add/operator/toPromise';
-
-import { DateModel } from 'ng2-datepicker';
 
 @Injectable()
 export class FilterService {
@@ -40,6 +39,11 @@ export class FilterService {
     get metaCampaigns(){ return this._metaCampaigns; }
     set metaCampaigns(val){ this.debugLog("SETTER METAC"); this._metaCampaigns = val; }
 
+    private _attributionModels : AttributionModel[];
+
+    get attributionModels(){ return this._attributionModels}
+    set attributionModels(val){ this.debugLog("SETTER ATTRIBUTION MODEL"); this._attributionModels = val; }
+
     dateValues = new Subject<any>();
     /**
      * Filters subjects :
@@ -55,9 +59,9 @@ export class FilterService {
 
     private dateRange : {startDate, endDate};
 
-    attributionModelId : string;
+    selectedAttributionModelId : string;
 
-    dataFraudDetectorRequest : BehaviorSubject<{startDate, endDate, attributionModelId}>;
+    dataFraudDetectorRequest : BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>;
 
     /**
      * [constructor description]
@@ -74,6 +78,7 @@ export class FilterService {
         private partnersService : PartnerService,
         private kpisService : KpiService,
         private metaCampaignsService : MetaCampaignService,
+        private attributionModelsService : AttributionModelService,
      ) {
          let days = 86400000;
          let today = Date.now();
@@ -84,15 +89,16 @@ export class FilterService {
              //endDate : new Date(today - (1*days)),
              endDate : new Date("2016-03-01"),
          };
-         this.attributionModelId = this.DEFAULT_ATTRIBUTION_MODEL;
-         this.dataFraudDetectorRequest = new BehaviorSubject<{startDate, endDate, attributionModelId}>(
-             {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, attributionModelId : this.attributionModelId}
+         this.selectedAttributionModelId = this.DEFAULT_ATTRIBUTION_MODEL;
+         this.dataFraudDetectorRequest = new BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>(
+             {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
          );
          this.debugLog("Constructor filter service w dates "+this.dateRange.startDate+" "+this.dateRange.endDate);
          this.advertisers = [];
          this.partners = [];
          this.kpis = [];
          this.metaCampaigns = [];
+         this.attributionModels = [];
     }
 
     private jwt() {
@@ -197,6 +203,21 @@ export class FilterService {
         });
     }
 
+    initAttributionModels():void{
+        this.attributionModelsService.getAll().then(
+                attributionModels => {
+                    this.debugLog("RESULT AttributionModels");
+                    this.debugLog(attributionModels);
+                    //Puts modified value in to attributionModels
+                    this.attributionModels = attributionModels;
+                    this.selectedAttributionModelId = attributionModels.filter(function(e){ return e.is_default_model==true })[0].id.toString();
+            },
+        ).catch(function(rejected){
+            console.error("PROMISE REJECTED : ");
+            console.error(rejected);
+        });
+    }
+
     getDateRange(){
         return this.dateRange;
     }
@@ -205,15 +226,15 @@ export class FilterService {
         this.dateRange = dateRange;
         this.debugLog("Setter from dateRange attributes triggers data recalculation");
         this.dataFraudDetectorRequest.next(
-            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, attributionModelId : this.attributionModelId}
+            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
         );
     }
 
-    setAttributionModelId(attributionModelId){
-        this.attributionModelId = attributionModelId;
+    setAttributionModelId(selectedAttributionModelId){
+        this.selectedAttributionModelId = selectedAttributionModelId;
         this.debugLog("Setter from attribution model triggers data recalculation");
         this.dataFraudDetectorRequest.next(
-            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, attributionModelId : this.attributionModelId}
+            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
         );
     }
 

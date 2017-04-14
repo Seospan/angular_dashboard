@@ -1,6 +1,19 @@
+
+
 <input type="text" name="daterangeInput" daterangepicker [options]="options" (selected)="selectedDate($event)" />
 
-{{DEBUG}}
+<select #modelChoice (change)="changeModel(modelChoice.value)" name="attributionModel" [(ngModel)]="filterService.selectedAttributionModelId">
+  <option *ngFor="let model of filterService.attributionModels"
+            [value]="model.id"
+            [selected]="model.id == filterService.selectedAttributionModelId"
+            >
+            {{ model.name }} ( {{ model.id }} )
+          </option>
+</select>
+Selected model :
+{{filterService.selectedAttributionModelId}}
+<span *ngFor="let model of filterService.attributionModels"><span *ngIf="model.id == filterService.selectedAttributionModelId">{{model.name}} ({{model.id}})</span></span>
+
 <br />
 Date values : {{filterService.dateValues | async }}
 <md-card class="result">

@@ -5,3 +5,4 @@ export * from './advertiser.service';
 export * from './partner.service';
 export * from './kpi.service';
 export * from './meta-campaign.service';
+export * from './attribution-model.service';

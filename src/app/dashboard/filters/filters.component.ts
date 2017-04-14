@@ -22,6 +22,7 @@ export class FiltersComponent implements OnInit {
 
     ngOnInit():void{
         this.filterService.initAllFilters();
+        this.filterService.initAttributionModels();
         this.options = {
             locale: { format: 'DD-MM-YYYY' },
             alwaysShowCalendars: false,
@@ -35,12 +36,17 @@ export class FiltersComponent implements OnInit {
         array.map((e) => {e.isSelected = state; return e;});
     }
 
-    public selectedDate(value: any) {
+    public selectedDate(value: any):void {
         this.filterService.setDateRange({
             startDate : new Date(value.start),
             endDate : new Date(value.end),
         });
-        console.log("New daterange : "+this.filterService.getDateRange().startDate+" - "+this.filterService.getDateRange().endDate);
+        this.debugLog("New daterange : "+this.filterService.getDateRange().startDate+" - "+this.filterService.getDateRange().endDate);
+    }
+
+    public changeModel(value):void {
+        this.filterService.setAttributionModelId(value);
+        this.debugLog("New model : "+value);
     }
 
 }
