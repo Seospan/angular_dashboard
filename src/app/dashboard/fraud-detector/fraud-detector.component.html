@@ -2,28 +2,28 @@
 
 Active advertisers : <br />
 <div *ngFor="let advertiser of filterService.advertisers">
-  <span  *ngIf="advertiser.isSelected" >
+  <span  *ngIf="advertiser.isSelected && advertiser.isSelectable" >
     <div>{{ advertiser.name }} : {{advertiser.isSelected}}   <span (click)="advertiser.isSelected = !advertiser.isSelected">X</span></div>
   </span>
 </div>
 <br /><br />
 Active partners : <br />
 <div *ngFor="let partner of filterService.partners">
-  <span  *ngIf="partner.isSelected" >
+  <span  *ngIf="partner.isSelected && partner.isSelectable" >
     <div>{{ partner.name }}   <span (click)="partner.isSelected = !partner.isSelected">X</span></div>
   </span>
 </div>
 <br /><br />
 Active Kpis : <br />
 <div *ngFor="let kpi of filterService.kpis">
-  <span  *ngIf="kpi.isSelected" >
+  <span  *ngIf="kpi.isSelected && kpi.isSelectable" >
     <div>{{ kpi.name }}   <span (click)="kpi.isSelected = !kpi.isSelected">X</span></div>
   </span>
 </div>
 <br /><br />
 Active MetaCampaings : <br />
 <div *ngFor="let metaCampaign of filterService.metaCampaigns">
-  <span  *ngIf="metaCampaign.isSelected" >
+  <span  *ngIf="metaCampaign.isSelected && metaCampaign.isSelectable" >
     <div>{{ metaCampaign.name }}   <span (click)="metaCampaign.isSelected = !metaCampaign.isSelected">X</span></div>
   </span>
 </div>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router} from '@angular/router';
+import { Router } from '@angular/router';
 import { BehaviorSubject }    from 'rxjs/BehaviorSubject';
 import { Subject }    from 'rxjs/Subject';
 import { Subscription }   from 'rxjs/Subscription';
@@ -14,6 +14,11 @@ import { AppConfig } from '../../app.config';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/combineLatest';
 
+declare var universe: any;
+import '../../../../assets/js/universe.min.js';
+
+import { FraudDataElem } from '../../models/server-models/fraud-data-elem';
+
 @Injectable()
 export class DataFaudDetectorService {
     DEBUG: boolean = true;
@@ -21,21 +26,26 @@ export class DataFaudDetectorService {
 
     ENDPOINT_URL : string = "/aggregated_suspicious_data/";
 
-    dataFraudDetector = new Subject<JSON>();
-
     /**
      * Subscribes to dataFraudDetectorRequest (elements of filtering) and pushes it to dataFraudDetector (data)
      */
     dataFiltersSubscription : Subscription;
-    /**
-     */
+
+    dataFraudDetector = new Subject<FraudDataElem[]>();
     dataFraudDetectorSubscription : Subscription;
 
     constructor(private http : Http,
         private config: AppConfig,
         private router: Router,
-        private filterService : FilterService) {
+        private filterService : FilterService,
+    ) {
             this.debugLog("Constructor datafrauddetectorservice");
+            /**
+             * Gets data when filter changes and sends data to dataFraudDetector (see dataFraudDetectorSubscription)
+             * @method subscribe
+             * @param  {(elems}  {next [description]
+             * @return {[type]}        [description]
+             */
             this.dataFiltersSubscription = this.filterService.dataFraudDetectorRequest.subscribe({
                 next : (elems) => {
                         console.log("Getting data from subscription");
@@ -45,13 +55,16 @@ export class DataFaudDetectorService {
                                 this.debugLog(result);
                                 this.dataFraudDetector.next(result);
                             },
-                        );
-
+                        ).catch(function(rejected){
+                            console.error("PROMISE REJECTED : ");
+                            console.error(rejected);
+                        });
                 },
                 error: (err) => console.error(err),
             });
-            this.dataFraudDetectorSubscription = this.dataFraudDetector
-                .combineLatest(
+
+            //Updates list of filters when data is received to match available items
+            this.dataFraudDetectorSubscription = this.dataFraudDetector.combineLatest(
                     this.filterService.advertisersSubject,
                     this.filterService.partnersSubject,
                     this.filterService.kpisSubject,
@@ -59,28 +72,27 @@ export class DataFaudDetectorService {
                 ).subscribe(
                     {
                         next : (latestValues) => {
-                                let dataFraudDetectorValue = latestValues[0];
-                                let allAdvertisersFromSubjectValue = latestValues[1];
-                                let allPartnersFromSubjectValue = latestValues[2];
-                                let allKpisFromSubjectValue = latestValues[3];
-                                let allMetaCampaignsFromSubjectValue = latestValues[4];
-                                //Execute universe and update filters
-                                this.filterService.setSelectableFilters(
-                                    [145464,145063],
-                                    [102,104,105],
-                                    [4,5,6,7],
-                                    [1,3,5,7],
-                                    allAdvertisersFromSubjectValue,
-                                    allPartnersFromSubjectValue,
-                                    allKpisFromSubjectValue,
-                                    allMetaCampaignsFromSubjectValue,
-                                );
 
+                            let data = latestValues[0];
+                            let allAdvertisersFromSubjectValue = latestValues[1];
+                            let allPartnersFromSubjectValue = latestValues[2];
+                            let allKpisFromSubjectValue = latestValues[3];
+                            let allMetaCampaignsFromSubjectValue = latestValues[4];
+
+                            this.filterService.setSelectableFilters(
+                                this.getUniqueList(data,"advertiser_id"),
+                                this.getUniqueList(data,"partner_id"),
+                                this.getUniqueList(data,"kpi_id"),
+                                this.getUniqueList(data,"metacampaign_id"),
+                                allAdvertisersFromSubjectValue,
+                                allPartnersFromSubjectValue,
+                                allKpisFromSubjectValue,
+                                allMetaCampaignsFromSubjectValue,
+                            );
                         },
                         error: (err) => console.error(err),
                     }
                 );
-
     }
 
     /**
@@ -96,7 +108,7 @@ export class DataFaudDetectorService {
      *                                 metacampaign_id
      *                                 partner_id
      */
-    getDataFraudDetector({startDate, endDate, attributionModelId}):Promise<JSON> {
+    getDataFraudDetector({startDate, endDate, attributionModelId}):Promise<FraudDataElem[]> {
         return this.http.post(this.config.apiRequestUrl + this.ENDPOINT_URL, [{
                                                                                     "start_date": startDate,
                                                                                     "end_date": endDate,
@@ -141,6 +153,19 @@ export class DataFaudDetectorService {
             let headers = new Headers({ 'Authorization': 'JWT ' + currentUser.token });
             return new RequestOptions({ headers: headers });
         }
+    }
+
+    /**
+     * Gets list of unique values from an array of objects and the name of the propertty
+     * @method getUniqueList
+     * @param  {[type]}      objectsArray    [description]
+     * @param  {[type]}      property [description]
+     */
+    getUniqueList(objectsArray, property){
+        return objectsArray.map(function(e){ return e[property]; })
+        .filter(function(elem, index, array){
+            return array.indexOf(elem) === index
+        });
     }
 
 

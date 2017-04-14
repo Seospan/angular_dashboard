@@ -1,5 +1,8 @@
 <input type="text" name="daterangeInput" daterangepicker [options]="options" (selected)="selectedDate($event)" />
 
+{{DEBUG}}
+<br />
+Date values : {{filterService.dateValues | async }}
 <md-card class="result">
   <md-card-content>
     <h2>Advertisers</h2>

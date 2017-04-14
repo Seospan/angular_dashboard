@@ -13,9 +13,10 @@ export class DashboardComponent implements OnInit {
   subscription : Subscription;
 
   constructor(private filterService:FilterService){
-    this.subscription = this.filterService.showFilters.subscribe(
-       showFiltersVal => { this.showFilters = showFiltersVal }
-     );
+    this.subscription = this.filterService.showFilters.subscribe({
+       next : showFiltersVal => { this.showFilters = showFiltersVal },
+       error: (err) => console.error(err),
+   });
   }
 
   ngOnInit(){

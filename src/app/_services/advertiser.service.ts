@@ -31,6 +31,7 @@ export class AdvertiserService {
                 return response.json() as Advertiser[];
             })
             .catch(error => {
+                console.error("PROMISE REJECTED");
                 console.log("error : "+error.json().detail);
                 console.log(error.json());
                 this.router.navigate(['/login'], { queryParams: { returnUrl : window.location.pathname }});

@@ -31,6 +31,7 @@ export class KpiService {
                 return response.json() as Kpi[];
             })
             .catch(error => {
+                console.error("PROMISE REJECTED : ");
                 console.log("error : "+error.json().detail);
                 console.log(error.json());
                 this.router.navigate(['/login'], { queryParams: { returnUrl : window.location.pathname }});

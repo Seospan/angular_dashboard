@@ -40,6 +40,7 @@ export class FilterService {
     get metaCampaigns(){ return this._metaCampaigns; }
     set metaCampaigns(val){ this.debugLog("SETTER METAC"); this._metaCampaigns = val; }
 
+    dateValues = new Subject<any>();
     /**
      * Filters subjects :
      * Used to combine with data. If initFilteer did edit the attribute, dataFraudDetectorService
@@ -58,7 +59,17 @@ export class FilterService {
 
     dataFraudDetectorRequest : BehaviorSubject<{startDate, endDate, attributionModelId}>;
 
-    constructor(private http : Http,
+    /**
+     * [constructor description]
+     * @method constructor
+     * @param  {Http}                privatehttp                 http service provided for whole app
+     * @param  {AdvertiserService}   privateadvertisersService   AdvertiserService - for getting filters form API
+     * @param  {PartnerService}      privatepartnersService      PartnerService - for getting filters form API
+     * @param  {KpiService}          privatekpisService          KpiService - for getting filters form API
+     * @param  {MetaCampaignService} privatemetaCampaignsService MetaCampaignService - for getting filters form API
+     */
+    constructor(
+        private http : Http,
         private advertisersService : AdvertiserService,
         private partnersService : PartnerService,
         private kpisService : KpiService,
@@ -67,8 +78,11 @@ export class FilterService {
          let days = 86400000;
          let today = Date.now();
          this.dateRange = {
-             startDate : new Date(today - (8*days)),
-             endDate : new Date(today - (1*days)),
+             //TODO : remettre dates par défaut
+             //startDate : new Date(today - (8*days)),
+             startDate : new Date("2016-01-01"),
+             //endDate : new Date(today - (1*days)),
+             endDate : new Date("2016-03-01"),
          };
          this.attributionModelId = this.DEFAULT_ATTRIBUTION_MODEL;
          this.dataFraudDetectorRequest = new BehaviorSubject<{startDate, endDate, attributionModelId}>(
@@ -76,12 +90,9 @@ export class FilterService {
          );
          this.debugLog("Constructor filter service w dates "+this.dateRange.startDate+" "+this.dateRange.endDate);
          this.advertisers = [];
-    }
-
-    // private helper methods
-
-    test(){
-        console.log("TEST");
+         this.partners = [];
+         this.kpis = [];
+         this.metaCampaigns = [];
     }
 
     private jwt() {
@@ -114,7 +125,10 @@ export class FilterService {
                     this.debugLog("ADVERTISERS sent to Subject");
                     this.debugLog(advertisers);
             },
-        );
+        ).catch(function(rejected){
+            console.error("PROMISE REJECTED : ");
+            console.error(rejected);
+        });
     }
 
     initPartners():void{
@@ -133,7 +147,10 @@ export class FilterService {
                     this.debugLog("PARTNERS sent to Subject");
                     this.debugLog(partners);
             },
-        );
+        ).catch(function(rejected){
+            console.error("PROMISE REJECTED : ");
+            console.error(rejected);
+        });
     }
 
     initKpis():void{
@@ -152,7 +169,10 @@ export class FilterService {
                     this.debugLog("KPIS sent to Subject");
                     this.debugLog(kpis);
             },
-        );
+        ).catch(function(rejected){
+            console.error("PROMISE REJECTED : ");
+            console.error(rejected);
+        });
     }
 
     initMetaCampaigns():void{
@@ -171,7 +191,10 @@ export class FilterService {
                     this.debugLog("METACAMPAIGNS sent to Subject");
                     this.debugLog(metaCampaigns);
             },
-        );
+        ).catch(function(rejected){
+            console.error("PROMISE REJECTED : ");
+            console.error(rejected);
+        });
     }
 
     getDateRange(){
@@ -186,11 +209,15 @@ export class FilterService {
         );
     }
 
-    /*dateChange(){
-        console.log("DATE CHANGE");
-    }*/
+    setAttributionModelId(attributionModelId){
+        this.attributionModelId = attributionModelId;
+        this.debugLog("Setter from attribution model triggers data recalculation");
+        this.dataFraudDetectorRequest.next(
+            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, attributionModelId : this.attributionModelId}
+        );
+    }
 
-   setSelectableFilters(
+    setSelectableFilters(
        selectableAdvertisers:number[],
        selectablePartners:number[],
        selectableKpis:number[],
@@ -199,26 +226,22 @@ export class FilterService {
        allPartners:Partner[],
        allKpis:Kpi[],
        allMetaCampaigns:MetaCampaign[],
-   ):void{
-       /*if(this.advertisersSubscription){ this.advertisersSubscription.unsubscribe(); }
-       this.advertisersSubscription = this.advertisersSubject.subscribe(
-           result => {
-               console.log("Intermediate");
-               console.log(result);
-               console.log(this.advertisers);
-               this.advertisers = result.map(function(e){
-                   console.log("ADV ID");
-                   console.log(advId.indexOf(e.sizmek_id));
-                   if(advId.indexOf(e.sizmek_id)!=-1){ e.isSelectable = true; return e; }
-                   else{ return e; }
-               });
-            }
-       );*/
+    ):void{
        console.log("Intermediate");
-       console.log(this.advertisers);
+       console.log(allAdvertisers);
+       console.log(selectableAdvertisers);
        this.advertisers = allAdvertisers.map(function(e){
-           if(selectableAdvertisers.indexOf(e.sizmek_id)!=-1){ e.isSelectable = true; return e; }
-           else{ return e; }
+           console.log("Edit Advertisers");
+           if(selectableAdvertisers.indexOf(e.sizmek_id)!=-1){
+               console.log("Comparing "+e.sizmek_id);
+                e.isSelectable = true;
+                console.log(e);
+                return e;
+             }
+           else{
+               e.isSelectable = false;
+               return e;
+           }
        });
        this.partners = allPartners.map(function(e){
            if(selectablePartners.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
@@ -226,13 +249,22 @@ export class FilterService {
        });
        this.kpis = allKpis.map(function(e){
            if(selectableKpis.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
-           else{ return e; }
+           else{
+               e.isSelectable = false;
+               return e;
+           }
        });
        this.metaCampaigns = allMetaCampaigns.map(function(e){
            if(selectableMetaCampaigns.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
-           else{ return e; }
+           else{
+               e.isSelectable = false;
+               return e;
+           }
        });
-   }
+       console.log("Advertisers afterupdate");
+       console.log(this.advertisers);
+       console.log(this);
+    }
 
     initAllFilters():void{
       this.initAdvertisers();
