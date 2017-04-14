@@ -31,4 +31,7 @@ Active MetaCampaings : <br />
 DATA : <br />
 -->
 
-<app-fd-groupby-datatable></app-fd-groupby-datatable>
+<app-fd-groupby-datatable
+      [availableGroupByFields]="['metacampaign_id','partner_id','advertiser_id','kpi_id','conversion_date']"
+      [groupByFields]="['metacampaign_id','partner_id','advertiser_id','kpi_id']"
+      ></app-fd-groupby-datatable>
