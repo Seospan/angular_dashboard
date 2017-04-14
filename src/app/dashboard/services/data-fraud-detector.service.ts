@@ -167,6 +167,98 @@ export class DataFaudDetectorService {
             return array.indexOf(elem) === index
         });
     }
+    dataGroupBy(groupByFieldsWithDetails, data): any[] {
+
+        /************************************************************************************/
+        /**
+         * Takes data as given by the api, and maps it, to keep :
+         * key : unique key composed of the values of the grouping criterias indicated in th eipnut,
+         * separated by a double underscore (__)
+         * conversions
+         * certified_conversions
+         * returns an array
+         */
+
+
+        let groupedByData = data.map((dataElem)=>{
+            let key = "";
+            groupByFieldsWithDetails.forEach((groupByElem) => { key += dataElem[groupByElem.id]+"__"; });
+            let object = {
+                key : key,
+                conversions : dataElem.conversions,
+                certified_conversions : dataElem.certified_conversions,
+            }
+            return object;
+        }).reduce((acc,elem,index,array)=>{
+            /**
+             * Reduce data : from a array of {key, conversions, certified_conversions}, makes an associative array
+             * which renders a unique object per set of grouping criteria (unique key generated above), containing
+             * aggregated conversions and aggregated certified_conversions.
+             * The key is not anymore in the object but present as key of the associative array.
+             */
+            if(!acc[elem.key]){
+                acc[elem.key] = {
+                    certified_conversions : elem.certified_conversions,
+                    conversions : elem.conversions,
+                };
+            }else{
+                 acc[elem.key].certified_conversions += elem.certified_conversions;
+                 acc[elem.key].conversions += elem.conversions;
+            }
+            return acc;
+        }, []);
+
+        /**
+         * Iterate on groupedByData
+         * Splits key (unique key composed of grouping items) into an array.
+         * Uses this.groupByFieldsWithDetails, which contains the key names in the same order, to map and inject
+         * each grouping item's id at the right key.
+         * At the end of the loop, data2 contains the conversions and certified_conversions, and an attribute for
+         * each grouping criteria ( criteria_name : criteria_value )
+         */
+        let data2 = []
+        for (var key in groupedByData) {
+            let keys = key.split("__")
+            groupByFieldsWithDetails.map((groupByElem, index) => {
+                if(groupByElem.details != []){
+
+
+                        //groupByElem.details.filter((elem)=>{ return elem[groupByElem.pk_identifier] == groupedByData[key][groupByElem.pk_identifier] })
+
+                }
+                /*
+                console.log("type d'id :");
+                console.log(groupByElem.pk_identifier );
+                console.log("valeur id:")
+                console.log(keys[index]);
+                console.log("Push into :");
+                console.log(groupedByData[key]);
+                console.log("A trouver dans:");
+                */
+
+                let detailedArray = []
+                console.log(groupByElem)
+                for (var possibleValuesList of groupByElem.details) {
+                    console.log("ca marhce pas!")
+                    console.log(detailedArray[possibleValuesList[groupByElem.pk_identifier]]);
+                    console.log(possibleValuesList.name);
+                    detailedArray[possibleValuesList[groupByElem.pk_identifier]] = possibleValuesList.name
+                }
+                //console.log(detailedArray)
+            //console.log(groupByElem.details.filter(function(e){return true}));
+                groupedByData[key][groupByElem.id] = detailedArray[keys[index]]
+            })
+            let percentage = (groupedByData[key].certified_conversions / groupedByData[key].conversions) * 100;
+            groupedByData[key]["percent_certified"] = percentage.toFixed(2);
+            data2.push(groupedByData[key])
+        }
+        console.log(data2)
+
+        this.debugLog("");
+        this.debugLog(data2);
+        /**********************************************************************************************************/
+        return data2;
+    }
 
 
 }

@@ -39,6 +39,8 @@ export class FdGroupbyDatatableComponent implements OnInit {
             {id:'kpi_id',label:'Kpi',details:this.filterService.kpis,pk_identifier:"id"},
             {id:'conversion_date',label:'Covnersion Date',details:[], pk_identifier:""},
         ];
+    groupByFieldsWithDetails : {id:string,label:string,details:any,pk_identifier:string}[];
+
     @Input() groupByFields : string[];
     @Input() availableGroupByFields : string[];
 
@@ -53,121 +55,64 @@ export class FdGroupbyDatatableComponent implements OnInit {
             ).subscribe({
             next : (latestValues) => {
                 let data = latestValues[0];
-                console.log("jxtruc")
-                console.log(data)
+                //console.log("jxtruc")
+                //console.log(data)
                 /**TODO : retirer**/
                 //data = data.splice(1,10)
-/************************************************************************************/
-                    /**
-                     * Takes data as given by the api, and maps it, to keep :
-                     * key : unique key composed of the values of the grouping criterias indicated in th eipnut,
-                     * separated by a double underscore (__)
-                     * conversions
-                     * certified_conversions
-                     * returns an array
-                     */
-                let groupByFieldsWithDetails = this.detailsAvailableGroupByFields.filter((elem)=>{
-                         return this.groupByFields.indexOf(elem.id) != -1
-                     });
-
-                    let groupedByData = data.map((dataElem)=>{
-                        let key = "";
-                        groupByFieldsWithDetails.forEach((groupByElem) => { key += dataElem[groupByElem.id]+"__"; });
-                        let object = {
-                            key : key,
-                            conversions : dataElem.conversions,
-                            certified_conversions : dataElem.certified_conversions,
-                        }
-                        return object;
-                    }).reduce((acc,elem,index,array)=>{
-                        /**
-                         * Reduce data : from a array of {key, conversions, certified_conversions}, makes an associative array
-                         * which renders a unique object per set of grouping criteria (unique key generated above), containing
-                         * aggregated conversions and aggregated certified_conversions.
-                         * The key is not anymore in the object but present as key of the associative array.
-                         */
-                        if(!acc[elem.key]){
-                            acc[elem.key] = {
-                                certified_conversions : elem.certified_conversions,
-                                conversions : elem.conversions,
-                            };
-                        }else{
-                             acc[elem.key].certified_conversions += elem.certified_conversions;
-                             acc[elem.key].conversions += elem.conversions;
-                        }
-                        return acc;
-                    }, []);
-
-                    /**
-                     * Iterate on groupedByData
-                     * Splits key (unique key composed of grouping items) into an array.
-                     * Uses this.groupByFieldsWithDetails, which contains the key names in the same order, to map and inject
-                     * each grouping item's id at the right key.
-                     * At the end of the loop, data2 contains the conversions and certified_conversions, and an attribute for
-                     * each grouping criteria ( criteria_name : criteria_value )
-                     */
-                    let data2 = []
-                    for (var key in groupedByData) {
-                        let keys = key.split("__")
-                        groupByFieldsWithDetails.map((groupByElem, index) => {
-                            if(groupByElem.details != []){
 
 
-                                    //groupByElem.details.filter((elem)=>{ return elem[groupByElem.pk_identifier] == groupedByData[key][groupByElem.pk_identifier] })
+                /*
+Factorized function
 
-                            }
-                            /*
-                            console.log("type d'id :");
-                            console.log(groupByElem.pk_identifier );
-                            console.log("valeur id:")
-                            console.log(keys[index]);
-                            console.log("Push into :");
-                            console.log(groupedByData[key]);
-                            console.log("A trouver dans:");
-                            */
-                            let detailedArray = []
-                            for (var truc of groupByElem.details) {
-                                detailedArray[truc[groupByElem.pk_identifier]] = truc.name
-                            }
-                            //console.log(detailedArray)
-                        //console.log(groupByElem.details.filter(function(e){return true}));
-                            groupedByData[key][groupByElem.id] = detailedArray[keys[index]]
-                        })
-                        let percentage = (groupedByData[key].certified_conversions / groupedByData[key].conversions) * 100;
-                        groupedByData[key]["percent_certified"] = percentage.toFixed(2);
-                        data2.push(groupedByData[key])
-                    }
-                    console.log(data2)
-
-                    this.debugLog("");
-                    this.debugLog(data2);
-/**********************************************************************************************************/
+En fait elle ne marche pas:
+* le service n'est pas connu par la fonction dès qu'on le sort de cet observer
+* Du coup le problème c'est que la propriété details de groupByFieldsWithDetails n'existe pas
+* De fait il n'arrive pas à faire le mapping
+* Donc il faut :
+*       1) virer le details de ce detailsAvailableGroupByFields, il ne sert à rien
+*       2) créer un objet dataTableColumns avec juste les colonnes de base
+*       3) transformer la fonction en observable de ce subject dans dataFraudDetectorService
+*       4) S'abonner aux observables comme ici
+*       5) Mettre en place les filtres
+*       6) Faire le groupby, mettre en place les bonnes colonnes
+*       7) renvoyer un object composé de:
+*           a) la data
+*           b) la liste de colonnes à rajouter
+*       8) ici on fait un observer sur l'observable en question, on récupére l'object, on le casse en deux,
+                 */
+                let data2 = this.dataFraudDetectorService.dataGroupBy(this.groupByFieldsWithDetails, data)
 
                     /**
                      * Data for the dataTable
                      */
-                    this.data = data2;
-                    this.filteredData = this.data;
-                    this.filteredTotal = this.data.length;
-                    this.filter();
+                this.data = data2;
+                this.filteredData = this.data;
+                this.filteredTotal = this.data.length;
+                this.filter();
             },
             error: (err) => console.error(err),
         });
     }
 
     ngOnInit(): void {
-        this.columns = [
-            { name : 'conversions', label:'Conversions' },
-            { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
-            { name : 'percent_certified', label:'Percentage of Certified Conversions', numeric: true },
-        ];
+
         /**
          * Add one column per grouping parameter
          */
-        this.groupByFields.forEach((field)=>{
-            console.log(field)
-            //this.columns.unshift({name : field.id, label : field.label });
+        this.groupByFieldsWithDetails = this.detailsAvailableGroupByFields.filter((elem)=>{
+                 return this.groupByFields.indexOf(elem.id) != -1
+             });
+        this.columns = [
+                 { name : 'conversions', label:'Conversions', numeric: true },
+                 { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
+                 { name : 'percent_certified', label:'% Certified', numeric: true },
+             ];
+        this.groupByFieldsWithDetails.map((elem) => {
+            console.log("trucjx2");
+            console.log(elem);
+            this.columns.unshift({name: elem.id, label: elem.label})
         });
+
     }
 
     sort(sortEvent: ITdDataTableSortChangeEvent): void {
