@@ -1,32 +1,119 @@
 import { Injectable } from '@angular/core';
+import { Http, Headers, RequestOptions, Response } from '@angular/http';
+
 import { Subject }    from 'rxjs/Subject';
 import { BehaviorSubject }    from 'rxjs/BehaviorSubject';
 import { Subscription }   from 'rxjs/Subscription';
-import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index'
-import { AttributionModel } from '../../models/server-models/index';
-import { AuthenticationService, AdvertiserService, PartnerService, KpiService, MetaCampaignService, AttributionModelService } from '../../_services/index';
+import 'rxjs/add/operator/toPromise';
 
-import { Http, Headers, RequestOptions, Response } from '@angular/http';
+import {
+    AuthenticationService,
+    AdvertiserService,
+    PartnerService,
+    KpiService,
+    MetaCampaignService,
+    AttributionModelService } from '../../_services/index';
 import { UserService } from '../../_services/user.service';
 
-import 'rxjs/add/operator/toPromise';
+
+import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index'
+import { AttributionModel } from '../../models/server-models/index';
+
 
 @Injectable()
 export class FilterService {
+    /* General options */
+
     DEBUG : boolean = true;
     private debugLog(str){ this.DEBUG && console.log(str); }
-    DEFAULT_FILTER_STATE : boolean = true;
-    DEFAULT_ATTRIBUTION_MODEL : string = "default";
 
-    private showFiltersSource = new Subject<boolean>();
-    showFilters = this.showFiltersSource.asObservable();
+    /*
+    This class is define to provide the services needed to keep track of the different filters value.
+    As a change in the filters may or may not induce a reload of the data from the server, filters are divided in 2 categories:
+        _ Filters that trigger a http request when changed:
+            _ dateRange
+            _ attributionModels
+        _ Filters that don't trigger a http request when changed:
+            _ Advertisers list
+            _ KPIs list
+            _ MetaCampaigns list
+            _ Partners list
+    */
 
-    //Elements of filtering
+    /******************************************************************************************************************/
+    /*
+    First we define the filters that trigger a http request
+    */
+
+    // Define the needed attributes
+    private dateRange : {startDate, endDate};
+    private _attributionModels : AttributionModel[];
+    selectedAttributionModelId : string; // TODO switch to private ?
+
+    // Associated subjects
+    dataFraudDetectorRequest : BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>;
+
+    // Associated getter and setters
+    get attributionModels(){ return this._attributionModels}
+    set attributionModels(val){ this.debugLog("SETTER ATTRIBUTION MODEL"); this._attributionModels = val; }
+    // TODO check why getDateRange instead of get dateRange
+    getDateRange(){
+        return this.dateRange;
+    }
+    setDateRange(dateRange){
+        this.dateRange = dateRange;
+        this.debugLog("Setter from dateRange attributes triggers data recalculation");
+        this.dataFraudDetectorRequest.next(
+            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
+        );
+    }
+    setAttributionModelId(selectedAttributionModelId){
+        this.selectedAttributionModelId = selectedAttributionModelId;
+        this.debugLog("Setter from attribution model triggers data recalculation");
+        this.dataFraudDetectorRequest.next(
+            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
+        );
+    }
+
+    // Associated methods
+    initDefaultDateRange():any{
+        let days = 86400000;
+        let today = Date.now();
+        return {
+            //TODO : remettre dates par défaut
+            //startDate : new Date(today - (8*days)),
+            startDate : new Date("2016-01-01"),
+            //endDate : new Date(today - (1*days)),
+            endDate : new Date("2016-03-01"),
+        };
+    }
+
+
+    /******************************************************************************************************************/
+    /*
+    Then we define the filters that don't trigger a http request.
+    */
+
+    // Define the needed attributes
     private _advertisers : Advertiser[];
     private _partners : Partner[];
     private _kpis : Kpi[];
     private _metaCampaigns : MetaCampaign[];
+    private showFiltersSource = new Subject<boolean>(); // use to indicate if we should show filters ???
 
+    // Associated subjects and observables
+    showFilters = this.showFiltersSource.asObservable();
+
+    advertisersSubject = new Subject<Advertiser[]>();
+    partnersSubject = new Subject<Partner[]>();
+    kpisSubject = new Subject<Kpi[]>();
+    metaCampaignsSubject = new Subject<MetaCampaign[]>();
+
+    // Default values used in the setting:
+    // Should be moved to the constructor instead ???
+    DEFAULT_FILTER_STATE : boolean = true;
+
+    // Associated getter and setters
     get advertisers(){ return this._advertisers; }
     set advertisers(val){ this.debugLog("SETTER ADV"); this._advertisers = val; }
 
@@ -39,12 +126,11 @@ export class FilterService {
     get metaCampaigns(){ return this._metaCampaigns; }
     set metaCampaigns(val){ this.debugLog("SETTER METAC"); this._metaCampaigns = val; }
 
-    private _attributionModels : AttributionModel[];
+    setShowFilters(val:boolean):boolean{
+        this.showFiltersSource.next(val);
+        return val;
+    }
 
-    get attributionModels(){ return this._attributionModels}
-    set attributionModels(val){ this.debugLog("SETTER ATTRIBUTION MODEL"); this._attributionModels = val; }
-
-    dateValues = new Subject<any>();
     /**
      * Filters subjects :
      * Used to combine with data. If initFilteer did edit the attribute, dataFraudDetectorService
@@ -52,16 +138,6 @@ export class FilterService {
      * (Depending of spcific dataset)
      * Filter attribute setting is delegated to DataFaudDetectorService with combineLatest
      */
-    advertisersSubject = new Subject<Advertiser[]>();
-    partnersSubject = new Subject<Partner[]>();
-    kpisSubject = new Subject<Kpi[]>();
-    metaCampaignsSubject = new Subject<MetaCampaign[]>();
-
-    private dateRange : {startDate, endDate};
-
-    selectedAttributionModelId : string;
-
-    dataFraudDetectorRequest : BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>;
 
     /**
      * [constructor description]
@@ -80,68 +156,76 @@ export class FilterService {
         private metaCampaignsService : MetaCampaignService,
         private attributionModelsService : AttributionModelService,
      ) {
-         let days = 86400000;
-         let today = Date.now();
-         this.dateRange = {
-             //TODO : remettre dates par défaut
-             //startDate : new Date(today - (8*days)),
-             startDate : new Date("2016-01-01"),
-             //endDate : new Date(today - (1*days)),
-             endDate : new Date("2016-03-01"),
-         };
-         this.selectedAttributionModelId = this.DEFAULT_ATTRIBUTION_MODEL;
-         this.dataFraudDetectorRequest = new BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>(
-             {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
-         );
-         this.debugLog("Constructor filter service w dates "+this.dateRange.startDate+" "+this.dateRange.endDate);
-         this.advertisers = [];
-         this.partners = [];
-         this.kpis = [];
-         this.metaCampaigns = [];
-         this.attributionModels = [];
-    }
+        this.debugLog("Initiating FilterService Constructor.")
+        /*
+        First we need to set the filters needed to send a data request to the server to default values:
+            _ dateRange using the initDefaultDateRange() method
+            _ attributionModelId to "default", the server will define the proper value by itself.
+        Then we need to load these values into the dataFraudDetectorRequest subject as its first values.
+        */
+        this.dateRange = this.initDefaultDateRange()
+        this.selectedAttributionModelId = "default";
+        this.dataFraudDetectorRequest = new BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>({
+            startDate : this.dateRange.startDate,
+            endDate : this.dateRange.endDate,
+            selectedAttributionModelId : this.selectedAttributionModelId
+          });
+        console.log(this.dataFraudDetectorRequest);
 
-    private jwt() {
-        // create authorization header with jwt token
-        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        if (currentUser && currentUser.token) {
-            let headers = new Headers({ 'Authorization': 'JWT ' + currentUser.token });
-            return new RequestOptions({ headers: headers });
-        }
-    }
-
-    setShowFilters(val:boolean):boolean{
-        this.showFiltersSource.next(val);
-        return val;
-    }
-
-    initAdvertisers():void{
+        /*
+        Second we initialize the advertisers, partners, kpis, metaCampaigns and attributionModel to their initial values.
+        Note that this values are getAll() from the server, so they don't need to be updated then and can be initialized
+        in the constructor.
+        */
         this.advertisersService.getAll().then(
-                result => {
-                    this.debugLog("RESULT Advertisers");
-                    this.debugLog(result);
-                    //Transforms result with all isSelectable set to false by default
-                    let advertisers = result.map((e) => {
-                        e.isSelectable = false;
-                        e.isSelected = true;
-                        return e;
-                    });
-                    //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
-                    this.advertisersSubject.next(advertisers);
-                    this.debugLog("ADVERTISERS sent to Subject");
-                    this.debugLog(advertisers);
-            },
-        ).catch(function(rejected){
+            result => {
+                this.debugLog("RESULT Advertisers");
+                //this.debugLog(result);
+                //this.debugLog(this.selectableAdvertisers);
+                 //Transforms result with all isSelectable set to false by default
+                 let advertisers = result.map((e) => {
+                     e.isSelectable = false;
+                     e.isSelected = true;
+                     return e;
+                 });
+                 //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
+                this.advertisersSubject.next(advertisers);
+            },)
+            .catch(function(rejected){
+                 console.error("PROMISE REJECTED : ");
+                 console.error(rejected);
+             });
+        this.kpisService.getAll().then(
+            result => {
+                //Transforms result with all isSelectable set to false by default
+                let kpis = result.map((e) => {
+                    e.isSelectable = false;
+                    e.isSelected = true;
+                    return e;
+                });
+                //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
+                this.kpisSubject.next(kpis);
+            },)
+            .catch(function(rejected){
             console.error("PROMISE REJECTED : ");
             console.error(rejected);
-        });
-    }
-
-    initPartners():void{
+            });
+        this.metaCampaignsService.getAll().then(
+            result => {
+                let metaCampaigns = result.map((e) => {
+                e.isSelectable = false;
+                e.isSelected = true;
+                return e;
+            });
+                     //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
+            this.metaCampaignsSubject.next(metaCampaigns);
+            },)
+            .catch(function(rejected){
+                console.error("PROMISE REJECTED : ");
+                console.error(rejected);
+            });
         this.partnersService.getAll().then(
                 result => {
-                    this.debugLog("RESULT Partners");
-                    this.debugLog(result);
                     //Transforms result with all isSelectable set to false by default
                     let partners = result.map((e) => {
                         e.isSelectable = false;
@@ -150,92 +234,29 @@ export class FilterService {
                     });
                     //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
                     this.partnersSubject.next(partners);
-                    this.debugLog("PARTNERS sent to Subject");
-                    this.debugLog(partners);
             },
-        ).catch(function(rejected){
-            console.error("PROMISE REJECTED : ");
-            console.error(rejected);
-        });
+            ).catch(function(rejected){
+                console.error("PROMISE REJECTED : ");
+                console.error(rejected);
+            });
+        this.attributionModelsService.getAll().then(
+                    attributionModels => {
+                        //this.debugLog("RESULT AttributionModels");
+                        //this.debugLog(attributionModels);
+                        //Puts modified value in to attributionModels
+                        this.attributionModels = attributionModels;
+                        this.selectedAttributionModelId = attributionModels.filter(function(e){ return e.is_default_model==true })[0].id.toString();
+                },
+            ).catch(function(rejected){
+                console.error("PROMISE REJECTED : ");
+                console.error(rejected);
+            });
     }
 
-    initKpis():void{
-        this.kpisService.getAll().then(
-                result => {
-                    this.debugLog("RESULT Kpis");
-                    this.debugLog(result);
-                    //Transforms result with all isSelectable set to false by default
-                    let kpis = result.map((e) => {
-                        e.isSelectable = false;
-                        e.isSelected = true;
-                        return e;
-                    });
-                    //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
-                    this.kpisSubject.next(kpis);
-                    this.debugLog("KPIS sent to Subject");
-                    this.debugLog(kpis);
-            },
-        ).catch(function(rejected){
-            console.error("PROMISE REJECTED : ");
-            console.error(rejected);
-        });
-    }
 
-    initMetaCampaigns():void{
-        this.metaCampaignsService.getAll().then(
-                result => {
-                    this.debugLog("RESULT MetaCampaigns");
-                    this.debugLog(result);
-                    //Transforms result with all isSelectable set to false by default
-                    let metaCampaigns = result.map((e) => {
-                        e.isSelectable = false;
-                        e.isSelected = true;
-                        return e;
-                    });
-                    //Sends modified value to advertisersSubject to be caught by dataFraudDetectorSubscription
-                    this.metaCampaignsSubject.next(metaCampaigns);
-                    this.debugLog("METACAMPAIGNS sent to Subject");
-                    this.debugLog(metaCampaigns);
-            },
-        ).catch(function(rejected){
-            console.error("PROMISE REJECTED : ");
-            console.error(rejected);
-        });
-    }
 
     initAttributionModels():void{
-        this.attributionModelsService.getAll().then(
-                attributionModels => {
-                    this.debugLog("RESULT AttributionModels");
-                    this.debugLog(attributionModels);
-                    //Puts modified value in to attributionModels
-                    this.attributionModels = attributionModels;
-                    this.selectedAttributionModelId = attributionModels.filter(function(e){ return e.is_default_model==true })[0].id.toString();
-            },
-        ).catch(function(rejected){
-            console.error("PROMISE REJECTED : ");
-            console.error(rejected);
-        });
-    }
 
-    getDateRange(){
-        return this.dateRange;
-    }
-
-    setDateRange(dateRange){
-        this.dateRange = dateRange;
-        this.debugLog("Setter from dateRange attributes triggers data recalculation");
-        this.dataFraudDetectorRequest.next(
-            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
-        );
-    }
-
-    setAttributionModelId(selectedAttributionModelId){
-        this.selectedAttributionModelId = selectedAttributionModelId;
-        this.debugLog("Setter from attribution model triggers data recalculation");
-        this.dataFraudDetectorRequest.next(
-            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
-        );
     }
 
     setSelectableFilters(
@@ -248,15 +269,15 @@ export class FilterService {
        allKpis:Kpi[],
        allMetaCampaigns:MetaCampaign[],
     ):void{
-       console.log("Intermediate");
-       console.log(allAdvertisers);
-       console.log(selectableAdvertisers);
+       //console.log("Intermediate");
+       //console.log(allAdvertisers);
+       //console.log(selectableAdvertisers);
        this.advertisers = allAdvertisers.map(function(e){
-           console.log("Edit Advertisers");
+           //console.log("Edit Advertisers");
            if(selectableAdvertisers.indexOf(e.sizmek_id)!=-1){
-               console.log("Comparing "+e.sizmek_id);
+               //console.log("Comparing "+e.sizmek_id);
                 e.isSelectable = true;
-                console.log(e);
+                //console.log(e);
                 return e;
              }
            else{
@@ -282,16 +303,16 @@ export class FilterService {
                return e;
            }
        });
-       console.log("Advertisers afterupdate");
-       console.log(this.advertisers);
-       console.log(this);
+       this.debugLog("Advertisers afterupdate");
+       this.debugLog(this.advertisers);
+       this.debugLog(this);
     }
 
     initAllFilters():void{
-      this.initAdvertisers();
-      this.initPartners();
-      this.initKpis();
-      this.initMetaCampaigns();
+      //this.initAdvertisers();
+      //this.initPartners();
+      //this.initKpis();
+      //this.initMetaCampaigns();
     }
 
 }

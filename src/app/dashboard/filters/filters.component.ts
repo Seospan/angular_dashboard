@@ -21,8 +21,8 @@ export class FiltersComponent implements OnInit {
     }
 
     ngOnInit():void{
-        this.filterService.initAllFilters();
-        this.filterService.initAttributionModels();
+        //this.filterService.initAllFilters();
+        //this.filterService.initAttributionModels();
         this.options = {
             locale: { format: 'DD-MM-YYYY' },
             alwaysShowCalendars: false,

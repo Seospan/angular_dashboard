@@ -15,6 +15,7 @@ import { DefaultComponent } from './default/default.component';
 import { ReportingComponent } from './reporting/reporting.component';
 
 import { FilterService } from './services/filter-service';
+import { RequestFraudDataService } from './services/request-fraud-data-services';
 import { DataFaudDetectorService } from './services/data-fraud-detector.service';
 import { AdvertiserService,
         PartnerService,
@@ -58,6 +59,7 @@ import { FdGroupbyDatatableComponent } from './fd-groupby-datatable/fd-groupby-d
     MetaCampaignService,
     DataFaudDetectorService,
     AttributionModelService,
+    RequestFraudDataService,
   ]
 })
 export class DashboardModule {

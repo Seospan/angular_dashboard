@@ -1,7 +1,12 @@
 import { Component, OnInit, Input } from '@angular/core';
 
-import { TdDataTableService, TdDataTableSortingOrder, ITdDataTableSortChangeEvent, ITdDataTableColumn } from '@covalent/core';
-import { IPageChangeEvent } from '@covalent/core';
+import {
+    TdDataTableService,
+    TdDataTableSortingOrder,
+    ITdDataTableSortChangeEvent,
+    ITdDataTableColumn,
+    IPageChangeEvent } from '@covalent/core';
+
 import { Subscription }   from 'rxjs/Subscription';
 
 import { FilterService } from '../services/filter-service';
@@ -47,6 +52,11 @@ export class FdGroupbyDatatableComponent implements OnInit {
     constructor(private filterService : FilterService,
         private dataFraudDetectorService : DataFaudDetectorService,
         private _dataTableService: TdDataTableService) {
+            /* To work this component need the following data:
+            - a filtered data feed (Subject) on the fraud detector data
+            - 
+            */
+
             this.dataFraudDetectorService.dataFraudDetector.combineLatest(
                 this.filterService.advertisersSubject,
                 this.filterService.partnersSubject,
