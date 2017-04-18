@@ -12,12 +12,17 @@ import { Observable } from 'rxjs/Observable';
 import { Subject } from 'rxjs/Subject';
 
 import { MultiAttributionDataService } from '../services/multi-attribution-data.service';
+import { RequestMultiAttributionDataService } from '../services/request-multi-attribution-data.service';
+
 
 @Component({
   selector: 'app-ma-groupby-datatable',
   templateUrl: './ma-groupby-datatable.component.html',
   styleUrls: ['./ma-groupby-datatable.component.css'],
-  providers: [ MultiAttributionDataService ],
+  providers: [
+      MultiAttributionDataService,
+      RequestMultiAttributionDataService,
+  ],
 })
 export class MaGroupbyDatatableComponent implements OnInit {
     DEBUG: boolean = true;
@@ -29,6 +34,7 @@ export class MaGroupbyDatatableComponent implements OnInit {
 
     constructor(
         private multiAttributionDataService: MultiAttributionDataService,
+        private requestMultiAttributionDataService: RequestMultiAttributionDataService,
     ) {
         this.debugLog("ma-groupby-datatable constructor started !")
     }
@@ -37,13 +43,13 @@ export class MaGroupbyDatatableComponent implements OnInit {
 
         this.debugLog("ma-groupby-datatable ngOnInit started !")
 
-        this.multiAttributionDataService.attributionModelIdSubject.subscribe({
+        this.requestMultiAttributionDataService.attributionModelIdSubject.subscribe({
             next: res => {
                 this.affiche = res;
                 console.log(res)
             }
         });
-        this.multiAttributionDataService.attributionModelIdSubject.next(this.multiAttributionModelId);
+        this.requestMultiAttributionDataService.attributionModelIdSubject.next(this.multiAttributionModelId);
         this.debugLog("ma-groupby-datatable ngOnInit ended !")
 
     }
