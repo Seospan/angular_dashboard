@@ -7,6 +7,7 @@ import {
     ITdDataTableColumn,
     IPageChangeEvent } from '@covalent/core';
 
+
 import { Subscription }   from 'rxjs/Subscription';
 
 import { FilterService } from '../services/filter-service';
@@ -23,7 +24,10 @@ export class FdGroupbyDatatableComponent implements OnInit {
     private debugLog(str){ this.DEBUG && console.log(str); }
 
     private data : FraudDataElem[];
-    private columns : ITdDataTableColumn[];
+    private columns : ITdDataTableColumn[] = [];
+    //Columns that represent an id. To be used by the "show ids" column
+    private withoutIdColumns : ITdDataTableColumn[] = [];
+    private withIdColumns : ITdDataTableColumn[] = [];
 
     filteredData: any[];
     filteredTotal: number;
@@ -49,6 +53,8 @@ export class FdGroupbyDatatableComponent implements OnInit {
     @Input() groupByFields : string[];
     @Input() availableGroupByFields : string[];
     @ViewChild('pagingBar') pagingBar
+
+    displayIdsInDatatable : boolean = false;
 
     constructor(private filterService : FilterService,
         private dataFraudDetectorService : DataFaudDetectorService,
@@ -122,7 +128,13 @@ En fait elle ne marche pas:
         this.groupByFieldsWithDetails = this.detailsAvailableGroupByFields.filter((elem)=>{
                  return this.groupByFields.indexOf(elem.id) != -1
              });
-        this.columns = [
+
+        this.withIdColumns = [
+                 { name : 'conversions', label:'Conversions', numeric: true },
+                 { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
+                 { name : 'percent_certified', label:'% Certified', numeric: true },
+             ];
+        this.withoutIdColumns = [
                  { name : 'conversions', label:'Conversions', numeric: true },
                  { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
                  { name : 'percent_certified', label:'% Certified', numeric: true },
@@ -131,13 +143,23 @@ En fait elle ne marche pas:
             console.log("trucjx2");
             console.log(elem);
             if(elem.name){
-                this.columns.unshift({name: elem.id, label: elem.label+" ID"})
-                this.columns.unshift({name: elem.name, label: elem.label})
+                //Create a "with id" and a "wihout id" set on columns
+                this.withoutIdColumns.unshift({name: elem.name, label: elem.label});
+
+                this.withIdColumns.unshift({name: elem.id, label: elem.label+" ID"})
+                this.withIdColumns.unshift({name: elem.name, label: elem.label})
             }else{
                 //Covers for date (no name)
-                this.columns.unshift({name: elem.id, label: elem.label})
+                this.withIdColumns.unshift({name: elem.id, label: elem.label})
+                this.withoutIdColumns.unshift({name: elem.id, label: elem.label})
             }
         });
+        //Put columns depending of "display ids" (displayIdsInDatatable) toggle option
+        if(this.displayIdsInDatatable == true){
+            this.columns = this.withIdColumns;
+        }else{
+            this.columns = this.withoutIdColumns;
+        }
 
     }
 
@@ -167,6 +189,19 @@ En fait elle ne marche pas:
         newData = this._dataTableService.sortData(newData, this.sortBy, this.sortOrder);
         newData = this._dataTableService.pageData(newData, this.fromRow, this.currentPage * this.pageSize);
         this.filteredData = newData;
+    }
+
+    toggleIdColumns(){
+        this.displayIdsInDatatable = !this.displayIdsInDatatable;
+        console.log("ID DISPLAY");
+        console.log(this.displayIdsInDatatable);
+        console.log(this.columns);
+        if(this.displayIdsInDatatable == true){
+            this.columns = this.withIdColumns;
+        }else{
+            this.columns = this.withoutIdColumns;
+        }
+
     }
 
 }
