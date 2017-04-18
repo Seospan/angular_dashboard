@@ -22,8 +22,8 @@
 <td-chips [items]="availableGroupByFields"
   [(ngModel)]="activeGroupByFields"
   placeholder="Enter autocomplete string for new group by criteria"
-  (add)="findDetailedDimensionsAndAggregate(this.filteredData)"
-  (remove)="findDetailedDimensionsAndAggregate(this.filteredData)"
+  (add)="changeGroupByCriteria()"
+  (remove)="changeGroupByCriteria()"
   requireMatch></td-chips>
 <td-data-table
   #dataTable

@@ -29,10 +29,16 @@ export class FdGroupbyDatatableComponent implements OnInit {
 
     private filteredData : FraudDataElem[];
     private aggregatedFilteredData : FraudDataElem[];
-    private columns : ITdDataTableColumn[] = [];
+
+    private dimensionsWithIdColumns : ITdDataTableColumn[] = [];
+    private dimensionsWithoutIdColumns : ITdDataTableColumn[] = [];
+    private measuresColumns : ITdDataTableColumn[] = [];
+
     //Columns that represent an id. To be used by the "show ids" column
     private withoutIdColumns : ITdDataTableColumn[] = [];
     private withIdColumns : ITdDataTableColumn[] = [];
+
+    private columns : ITdDataTableColumn[] = [];
 
     filteredByDataTableData: any[];
     filteredTotal: number;
@@ -127,54 +133,13 @@ En fait elle ne marche pas:
             }
         );
 
-        /**
-         * Add one column per grouping parameter
-         * Needs to be mapped on this.groupByFields and not fitlered on detailsAvailableGroupByFields to keep order
-         */
-        this.groupByFieldsWithDetails = this.activeGroupByFields.map((elem)=>{
-            return this.detailsAvailableGroupByFields.filter((detailedElem)=>{
-                return detailedElem.id == elem;
-            })[0];
-        });
+        this.measuresColumns = [
+             { name : 'conversions', label:'Conversions', numeric: true },
+             { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
+             { name : 'percent_certified', label:'% Certified', numeric: true },
+         ];
 
-        this.withIdColumns = [
-                 { name : 'conversions', label:'Conversions', numeric: true },
-                 { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
-                 { name : 'percent_certified', label:'% Certified', numeric: true },
-             ];
-        this.withoutIdColumns = [
-                 { name : 'conversions', label:'Conversions', numeric: true },
-                 { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
-                 { name : 'percent_certified', label:'% Certified', numeric: true },
-             ];
-        //Data go through a intermediate array so that they appear in the right order
-        let columnsToAddWithId = [];
-        let columnsToAddWithoutId = [];
-        this.groupByFieldsWithDetails.map((elem) => {
-            console.log("trucjx2");
-            console.log(elem);
-            if(elem.name){
-                //Create a "with id" and a "wihout id" set on columns
-                columnsToAddWithoutId.push({name: elem.name, label: elem.label});
-
-                columnsToAddWithId.push({name: elem.name, label: elem.label});
-                columnsToAddWithId.push({name: elem.id, label: elem.label+" ID"});
-            }else{
-                //Covers for date (no name)
-                columnsToAddWithoutId.push({name: elem.id, label: elem.label})
-                columnsToAddWithId.push({name: elem.id, label: elem.label})
-            }
-        });
-        //Concatenate constant columns (defined above) with dybamic columns
-        this.withIdColumns = columnsToAddWithId.concat(this.withIdColumns);
-        this.withoutIdColumns = columnsToAddWithoutId.concat(this.withoutIdColumns);
-        //Put columns depending of "display ids" (displayIdsInDatatable) toggle option
-        if(this.displayIdsInDatatable == true){
-            this.columns = this.withIdColumns;
-        }else{
-            this.columns = this.withoutIdColumns;
-        }
-
+        this.rebuildColumns();
     }
 
     sort(sortEvent: ITdDataTableSortChangeEvent): void {
@@ -207,9 +172,6 @@ En fait elle ne marche pas:
 
     toggleIdColumns(){
         this.displayIdsInDatatable = !this.displayIdsInDatatable;
-        console.log("ID DISPLAY");
-        console.log(this.displayIdsInDatatable);
-        console.log(this.columns);
         if(this.displayIdsInDatatable == true){
             this.columns = this.withIdColumns;
         }else{
@@ -225,5 +187,55 @@ En fait elle ne marche pas:
         this.aggregatedFilteredData = this.dataFraudDetectorService.aggregateFilteredData(filtered_data, detailedDimensions);
         this.filter();
     }
+    /**
+     * Rebuilds columns from with id and witohut id depending on "show ids" parameter
+     * @method rebuildColumns
+     * @return {[type]}       [description]
+     */
+    rebuildColumns(){
+        /**
+         * Add one column per grouping parameter
+         * Needs to be mapped on this.groupByFields and not fitlered on detailsAvailableGroupByFields to keep order
+         */
+        this.groupByFieldsWithDetails = this.activeGroupByFields.map((elem)=>{
+            return this.detailsAvailableGroupByFields.filter((detailedElem)=>{
+                return detailedElem.id == elem;
+            })[0];
+        });
 
+        this.withoutIdColumns = this.measuresColumns;
+        this.withIdColumns = this.measuresColumns;
+        //Data goes through a intermediate array so that they appear in the right order
+        this.dimensionsWithIdColumns = []
+        this.dimensionsWithoutIdColumns = []
+        this.groupByFieldsWithDetails.map((elem) => {
+            console.log("trucjx2");
+            console.log(elem);
+            if(elem.name){
+                //Create a "with id" and a "wihout id" set on columns
+                this.dimensionsWithoutIdColumns.push({name: elem.name, label: elem.label});
+
+                this.dimensionsWithIdColumns.push({name: elem.name, label: elem.label});
+                this.dimensionsWithIdColumns.push({name: elem.id, label: elem.label+" ID"});
+            }else{
+                //Covers for date (no name)
+                this.dimensionsWithoutIdColumns.push({name: elem.id, label: elem.label})
+                this.dimensionsWithIdColumns.push({name: elem.id, label: elem.label})
+            }
+        });
+        //Concatenate constant columns (defined above) with dynamic columns
+        this.withIdColumns = this.dimensionsWithIdColumns.concat(this.withIdColumns);
+        this.withoutIdColumns = this.dimensionsWithoutIdColumns.concat(this.withoutIdColumns);
+        //Put columns depending of "display ids" (displayIdsInDatatable) toggle option
+        if(this.displayIdsInDatatable == true){
+            this.columns = this.withIdColumns;
+        }else{
+            this.columns = this.withoutIdColumns;
+        }
+    }
+
+    changeGroupByCriteria(){
+        this.findDetailedDimensionsAndAggregate(this.filteredData);
+        this.rebuildColumns();
+    }
 }
