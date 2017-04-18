@@ -26,6 +26,7 @@ Date values : {{filterService.dateValues | async }}
             <md-checkbox
                   *ngIf="advertiser.isSelectable"
                   [(ngModel)]="advertiser.isSelected"
+                  (change)="updateAdvertisers()"
                   [ngClass]="{'active' : advertiser.isSelected}"
                   [align]="start"
                   >
@@ -46,6 +47,7 @@ Date values : {{filterService.dateValues | async }}
           <md-checkbox
                 *ngIf="partner.isSelectable"
                 [(ngModel)]="partner.isSelected"
+                (change)="updatePartners()"
                 [ngClass]="{'active' : partner.isSelected}"
                 [align]="start"
                 >
@@ -66,6 +68,7 @@ Date values : {{filterService.dateValues | async }}
           <md-checkbox
                 *ngIf="kpi.isSelectable"
                 [(ngModel)]="kpi.isSelected"
+                (change)="updateKpis()"
                 [ngClass]="{'active' : kpi.isSelected}"
                 [align]="start"
                 >
@@ -86,6 +89,7 @@ Date values : {{filterService.dateValues | async }}
           <md-checkbox
                 *ngIf="metaCampaign.isSelectable"
                 [(ngModel)]="metaCampaign.isSelected"
+                (change)="updateMetaCampaigns()"
                 [ngClass]="{'active' : metaCampaign.isSelected}"
                 [align]="start"
                 >

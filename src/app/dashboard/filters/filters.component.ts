@@ -49,4 +49,16 @@ export class FiltersComponent implements OnInit {
         this.debugLog("New model : "+value);
     }
 
+    public updateAdvertisers():void{
+        this.filterService.advertisersSubject.next(this.filterService.advertisers);
+    }
+    public updatePartners():void{
+        this.filterService.partnersSubject.next(this.filterService.partners);
+    }
+    public updateKpis():void{
+        this.filterService.kpisSubject.next(this.filterService.kpis);
+    }
+    public updateMetaCampaigns():void{
+        this.filterService.metaCampaignsSubject.next(this.filterService.metaCampaigns);
+    }
 }
