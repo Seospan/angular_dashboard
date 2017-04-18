@@ -130,8 +130,10 @@ export class DataFaudDetectorService {
             detailedDimensions.map((dimension, index) => {
                 // add the id
                 mapped_reduced_data[row][dimension.id] = dimensions[index]
-                // addd the name
-                mapped_reduced_data[row][dimension.name] = allNames[dimension.details][dimensions[index]]
+                if(dimension.details!=""){
+                    // add the name
+                    mapped_reduced_data[row][dimension.name] = allNames[dimension.details][dimensions[index]]
+                }
             })
             /*
             Add the corresponding column
@@ -143,7 +145,7 @@ export class DataFaudDetectorService {
         }
         this.debugLog("Filtered and Aggregated Data:")
         this.debugLog(aggregated_and_filtered_data)
-        return [aggregated_and_filtered_data];
+        return aggregated_and_filtered_data;
     }
 
 
@@ -215,7 +217,7 @@ export class DataFaudDetectorService {
                     });
                 // finally we send it to the filtered data subject.
                 this.filteredFraudDataSubject.next(filtered_data);
-                this.aggregateFilteredData(filtered_data, [
+                /*this.aggregateFilteredData(filtered_data, [
                     {
                         id:'metacampaign_id',
                         name:'metacampaign_name',
@@ -223,7 +225,7 @@ export class DataFaudDetectorService {
                         details:'metaCampaignsNames',
                         pk_identifier:"id"
                     }
-                ]);
+                ]);*/
             },
             error: (err) => console.error(err),
         });

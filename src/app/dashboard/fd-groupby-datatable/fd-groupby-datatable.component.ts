@@ -31,20 +31,20 @@ export class FdGroupbyDatatableComponent implements OnInit {
     searchTerm: string = '';
     fromRow: number = 1;
     currentPage: number = 1;
-    pageSize: number = 5;
+    pageSize: number = 50;
     sortBy: string = 'conversions';
     sortOrder: TdDataTableSortingOrder = TdDataTableSortingOrder.Descending;
 
     dataFraudDetectorSubscription : Subscription
 
-    detailsAvailableGroupByFields : [{id:string,label:string,details:any,pk_identifier:string}] = [
-            {id:'metacampaign_id',label:'Meta Campaign',details:this.filterService.metaCampaigns,pk_identifier:"id"},
-            {id:'partner_id',label:'Partners',details:this.filterService.partners,pk_identifier:"id"},
-            {id:'advertiser_id',label:'Advertiser',details:this.filterService.advertisers,pk_identifier:"sizmek_id"},
-            {id:'kpi_id',label:'Kpi',details:this.filterService.kpis,pk_identifier:"id"},
-            {id:'conversion_date',label:'Covnersion Date',details:[], pk_identifier:""},
+    detailsAvailableGroupByFields : [{id:string,name:string,label:string,details:string,pk_identifier:string}] = [
+            {id:'metacampaign_id',name:'metacampaign_name',label:'Meta Campaign',details:'metaCampaignsNames',pk_identifier:"id"},
+            {id:'partner_id',name:'partner_name',label:'Partners',details:'partnersNames',pk_identifier:"id"},
+            {id:'advertiser_id',name:'common_name_name',label:'Advertiser',details:'advertisersNames',pk_identifier:"sizmek_id"},
+            {id:'kpi_id',name:'kpi_name',label:'Kpi',details:'kpisNames',pk_identifier:"id"},
+            {id:'conversion_date',name:'',label:'Conversion Date',details:"", pk_identifier:""},
         ];
-    groupByFieldsWithDetails : {id:string,label:string,details:any,pk_identifier:string}[];
+    groupByFieldsWithDetails : {id:string,name:string,label:string,details:string,pk_identifier:string}[];
 
     @Input() groupByFields : string[];
     @Input() availableGroupByFields : string[];
@@ -54,7 +54,7 @@ export class FdGroupbyDatatableComponent implements OnInit {
         private _dataTableService: TdDataTableService) {
             /* To work this component need the following data:
             - a filtered data feed (Subject) on the fraud detector data
-            - 
+            -
             */
 
             this.dataFraudDetectorService.dataFraudDetector.combineLatest(
@@ -90,21 +90,30 @@ En fait elle ne marche pas:
 *           b) la liste de colonnes à rajouter
 *       8) ici on fait un observer sur l'observable en question, on récupére l'object, on le casse en deux,
                  */
-                let data2 = this.dataFraudDetectorService.dataGroupBy(this.groupByFieldsWithDetails, data)
+                //let data2 = this.dataFraudDetectorService.dataGroupBy(this.groupByFieldsWithDetails, data)
 
                     /**
                      * Data for the dataTable
                      */
-                this.data = data2;
-                this.filteredData = this.data;
-                this.filteredTotal = this.data.length;
-                this.filter();
+                //this.data = data2;
+                //this.filteredData = this.data;
+                //this.filteredTotal = this.data.length;
+                //this.filter();
             },
             error: (err) => console.error(err),
         });
     }
 
     ngOnInit(): void {
+
+        this.dataFraudDetectorService.filteredFraudDataSubject.subscribe((filtered_data)=>{
+                //Map details data to requested dimensions
+                let detailedDimensions = this.detailsAvailableGroupByFields.filter((e)=>{ return this.groupByFields.indexOf(e.id) != -1 });
+                //Get data and inject it into this.data for the datatable
+                this.data = this.dataFraudDetectorService.aggregateFilteredData(filtered_data, detailedDimensions);
+                this.filter();
+            }
+        );
 
         /**
          * Add one column per grouping parameter
@@ -120,7 +129,13 @@ En fait elle ne marche pas:
         this.groupByFieldsWithDetails.map((elem) => {
             console.log("trucjx2");
             console.log(elem);
-            this.columns.unshift({name: elem.id, label: elem.label})
+            if(elem.name){
+                this.columns.unshift({name: elem.id, label: elem.label+" ID"})
+                this.columns.unshift({name: elem.name, label: elem.label})
+            }else{
+                //Covers for date (no name)
+                this.columns.unshift({name: elem.id, label: elem.label})
+            }
         });
 
     }
