@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 
 import {
     TdDataTableService,
@@ -48,6 +48,7 @@ export class FdGroupbyDatatableComponent implements OnInit {
 
     @Input() groupByFields : string[];
     @Input() availableGroupByFields : string[];
+    @ViewChild('pagingBar') pagingBar
 
     constructor(private filterService : FilterService,
         private dataFraudDetectorService : DataFaudDetectorService,
@@ -148,6 +149,7 @@ En fait elle ne marche pas:
 
     search(searchTerm: string): void {
         this.searchTerm = searchTerm;
+        this.pagingBar.navigateToPage(1);
         this.filter();
     }
 
