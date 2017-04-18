@@ -23,13 +23,18 @@ export class FdGroupbyDatatableComponent implements OnInit {
     DEBUG: boolean = false;
     private debugLog(str){ this.DEBUG && console.log(str); }
 
-    private data : FraudDataElem[];
+    /**
+     * data (from http) => aggregatedFilteredData (chip menu for dimensions => filteredByDataTableData (fitlered by datatable component))
+     */
+
+    private filteredData : FraudDataElem[];
+    private aggregatedFilteredData : FraudDataElem[];
     private columns : ITdDataTableColumn[] = [];
     //Columns that represent an id. To be used by the "show ids" column
     private withoutIdColumns : ITdDataTableColumn[] = [];
     private withIdColumns : ITdDataTableColumn[] = [];
 
-    filteredData: any[];
+    filteredByDataTableData: any[];
     filteredTotal: number;
 
     searchTerm: string = '';
@@ -50,8 +55,10 @@ export class FdGroupbyDatatableComponent implements OnInit {
         ];
     groupByFieldsWithDetails : {id:string,name:string,label:string,details:string,pk_identifier:string}[];
 
-    @Input() groupByFields : string[];
+    //@Input() groupByFields : string[];
+    /*@Input() */activeGroupByFields : string[]=[];
     @Input() availableGroupByFields : string[];
+    @Input() defaultGroupByFields : string[];
     @ViewChild('pagingBar') pagingBar
 
     displayIdsInDatatable : boolean = false;
@@ -71,7 +78,7 @@ export class FdGroupbyDatatableComponent implements OnInit {
                 this.filterService.metaCampaignsSubject,
             ).subscribe({
             next : (latestValues) => {
-                let data = latestValues[0];
+                //let data = latestValues[0];
                 //console.log("jxtruc")
                 //console.log(data)
                 /**TODO : retirer**/
@@ -112,13 +119,11 @@ En fait elle ne marche pas:
     }
 
     ngOnInit(): void {
-
+        //Initiate activegroupbyfields to default value given in input
+        this.activeGroupByFields=this.defaultGroupByFields;
         this.dataFraudDetectorService.filteredFraudDataSubject.subscribe((filtered_data)=>{
-                //Map details data to requested dimensions
-                let detailedDimensions = this.detailsAvailableGroupByFields.filter((e)=>{ return this.groupByFields.indexOf(e.id) != -1 });
-                //Get data and inject it into this.data for the datatable
-                this.data = this.dataFraudDetectorService.aggregateFilteredData(filtered_data, detailedDimensions);
-                this.filter();
+                this.filteredData = filtered_data;
+                this.findDetailedDimensionsAndAggregate(this.filteredData);
             }
         );
 
@@ -126,7 +131,7 @@ En fait elle ne marche pas:
          * Add one column per grouping parameter
          * Needs to be mapped on this.groupByFields and not fitlered on detailsAvailableGroupByFields to keep order
          */
-        this.groupByFieldsWithDetails = this.groupByFields.map((elem)=>{
+        this.groupByFieldsWithDetails = this.activeGroupByFields.map((elem)=>{
             return this.detailsAvailableGroupByFields.filter((detailedElem)=>{
                 return detailedElem.id == elem;
             })[0];
@@ -192,12 +197,12 @@ En fait elle ne marche pas:
     }
 
     filter(): void {
-        let newData: any[] = this.data;
+        let newData: any[] = this.aggregatedFilteredData;
         newData = this._dataTableService.filterData(newData, this.searchTerm, true);
         this.filteredTotal = newData.length;
         newData = this._dataTableService.sortData(newData, this.sortBy, this.sortOrder);
         newData = this._dataTableService.pageData(newData, this.fromRow, this.currentPage * this.pageSize);
-        this.filteredData = newData;
+        this.filteredByDataTableData = newData;
     }
 
     toggleIdColumns(){
@@ -211,6 +216,14 @@ En fait elle ne marche pas:
             this.columns = this.withoutIdColumns;
         }
 
+    }
+
+    findDetailedDimensionsAndAggregate(filtered_data){
+        //Map details data to requested dimensions
+        let detailedDimensions = this.detailsAvailableGroupByFields.filter((e)=>{ return this.activeGroupByFields.indexOf(e.id) != -1 });
+        //Get data and inject it into this.aggegatedFiltereData for the datatable
+        this.aggregatedFilteredData = this.dataFraudDetectorService.aggregateFilteredData(filtered_data, detailedDimensions);
+        this.filter();
     }
 
 }
