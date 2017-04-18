@@ -20,5 +20,6 @@ export class MultiAttributionComponent implements OnInit {
         }
 
     ngOnInit() {
+        this.filterService.setShowFilters(true);
     }
 }
