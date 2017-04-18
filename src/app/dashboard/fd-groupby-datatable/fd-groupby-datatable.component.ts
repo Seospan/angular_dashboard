@@ -133,6 +133,7 @@ En fait elle ne marche pas:
 
     search(searchTerm: string): void {
         this.searchTerm = searchTerm;
+        this.pagingBar.navigateToPage(1);
         this.filter();
     }
 
