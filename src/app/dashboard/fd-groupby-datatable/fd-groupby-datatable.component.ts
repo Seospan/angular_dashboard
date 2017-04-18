@@ -35,7 +35,7 @@ export class FdGroupbyDatatableComponent implements OnInit {
     searchTerm: string = '';
     fromRow: number = 1;
     currentPage: number = 1;
-    pageSize: number = 50;
+    pageSize: number = 10;
     sortBy: string = 'conversions';
     sortOrder: TdDataTableSortingOrder = TdDataTableSortingOrder.Descending;
 
@@ -124,10 +124,13 @@ En fait elle ne marche pas:
 
         /**
          * Add one column per grouping parameter
+         * Needs to be mapped on this.groupByFields and not fitlered on detailsAvailableGroupByFields to keep order
          */
-        this.groupByFieldsWithDetails = this.detailsAvailableGroupByFields.filter((elem)=>{
-                 return this.groupByFields.indexOf(elem.id) != -1
-             });
+        this.groupByFieldsWithDetails = this.groupByFields.map((elem)=>{
+            return this.detailsAvailableGroupByFields.filter((detailedElem)=>{
+                return detailedElem.id == elem;
+            })[0];
+        });
 
         this.withIdColumns = [
                  { name : 'conversions', label:'Conversions', numeric: true },
@@ -139,21 +142,27 @@ En fait elle ne marche pas:
                  { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
                  { name : 'percent_certified', label:'% Certified', numeric: true },
              ];
+        //Data go through a intermediate array so that they appear in the right order
+        let columnsToAddWithId = [];
+        let columnsToAddWithoutId = [];
         this.groupByFieldsWithDetails.map((elem) => {
             console.log("trucjx2");
             console.log(elem);
             if(elem.name){
                 //Create a "with id" and a "wihout id" set on columns
-                this.withoutIdColumns.unshift({name: elem.name, label: elem.label});
+                columnsToAddWithoutId.push({name: elem.name, label: elem.label});
 
-                this.withIdColumns.unshift({name: elem.id, label: elem.label+" ID"})
-                this.withIdColumns.unshift({name: elem.name, label: elem.label})
+                columnsToAddWithId.push({name: elem.name, label: elem.label});
+                columnsToAddWithId.push({name: elem.id, label: elem.label+" ID"});
             }else{
                 //Covers for date (no name)
-                this.withIdColumns.unshift({name: elem.id, label: elem.label})
-                this.withoutIdColumns.unshift({name: elem.id, label: elem.label})
+                columnsToAddWithoutId.push({name: elem.id, label: elem.label})
+                columnsToAddWithId.push({name: elem.id, label: elem.label})
             }
         });
+        //Concatenate constant columns (defined above) with dybamic columns
+        this.withIdColumns = columnsToAddWithId.concat(this.withIdColumns);
+        this.withoutIdColumns = columnsToAddWithoutId.concat(this.withoutIdColumns);
         //Put columns depending of "display ids" (displayIdsInDatatable) toggle option
         if(this.displayIdsInDatatable == true){
             this.columns = this.withIdColumns;
