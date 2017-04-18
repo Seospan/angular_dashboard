@@ -209,8 +209,6 @@ En fait elle ne marche pas:
         this.dimensionsWithIdColumns = []
         this.dimensionsWithoutIdColumns = []
         this.groupByFieldsWithDetails.map((elem) => {
-            console.log("trucjx2");
-            console.log(elem);
             if(elem.name){
                 //Create a "with id" and a "wihout id" set on columns
                 this.dimensionsWithoutIdColumns.push({name: elem.name, label: elem.label});
