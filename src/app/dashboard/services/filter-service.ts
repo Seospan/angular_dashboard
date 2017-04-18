@@ -27,18 +27,18 @@ export class FilterService {
     DEBUG : boolean = true;
     private debugLog(str){ this.DEBUG && console.log(str); }
 
-    /*
-    This class is define to provide the services needed to keep track of the different filters value.
-    As a change in the filters may or may not induce a reload of the data from the server, filters are divided in 2 categories:
-        _ Filters that trigger a http request when changed:
-            _ dateRange
-            _ attributionModels
-        _ Filters that don't trigger a http request when changed:
-            _ Advertisers list
-            _ KPIs list
-            _ MetaCampaigns list
-            _ Partners list
-    */
+    /**
+    *This class is define to provide the services needed to keep track of the different filters value.
+    *As a change in the filters may or may not induce a reload of the data from the server, filters are divided in 2 categories:
+    *    _ Filters that trigger a http request when changed:
+    *        _ dateRange
+    *        _ attributionModels
+    *    _ Filters that don't trigger a http request when changed:
+    *        _ Advertisers list
+    *        _ KPIs list
+    *        _ MetaCampaigns list
+    *        _ Partners list
+    **/
 
     /******************************************************************************************************************/
     /*

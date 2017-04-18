@@ -19,9 +19,15 @@
 </div>
 
 <md-divider></md-divider>
+<td-chips [items]="availableGroupByFields"
+  [(ngModel)]="activeGroupByFields"
+  placeholder="Enter autocomplete string for new group by criteria"
+  (add)="findDetailedDimensionsAndAggregate(this.filteredData)"
+  (remove)="findDetailedDimensionsAndAggregate(this.filteredData)"
+  requireMatch></td-chips>
 <td-data-table
   #dataTable
-  [data]="filteredData"
+  [data]="filteredByDataTableData"
   [columns]="columns"
   [sortable]="true"
   [sortBy]="sortBy"
