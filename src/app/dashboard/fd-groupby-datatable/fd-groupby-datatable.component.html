@@ -5,11 +5,19 @@
   <span *ngIf="!searchBox.searchVisible" class="push-left-sm">
     <span class="md-title">Title here</span>
   </span>
-  <span *ngIf="!searchBox.searchVisible" class="push-left-sm">
-  </span>
   <td-search-box #searchBox backIcon="arrow_back" class="push-right-sm" placeholder="Search here" (searchDebounce)="search($event)" flex>
   </td-search-box>
+  <md-slide-toggle
+            class="example-margin"
+            [color]="accent"
+            [checked]="displayIdsInDatatable"
+            [disabled]="false"
+            (change)="toggleIdColumns()"
+             >
+          Show Ids
+        </md-slide-toggle>
 </div>
+
 <md-divider></md-divider>
 <td-data-table
   #dataTable
@@ -20,10 +28,11 @@
   [sortOrder]="sortOrder"
   (sortChange)="sort($event)">
 </td-data-table>
+
 <div class="md-padding" *ngIf="!dataTable.hasData" layout="row" layout-align="center center">
   <h3>No results to display.</h3>
 </div>
-<td-paging-bar #pagingBar [pageSizes]="[50, 100, 150, 200]" [total]="filteredTotal" (change)="page($event)">
+<td-paging-bar #pagingBar [pageSizes]="[ 50,10, 100, 150, 200]" [total]="filteredTotal" (change)="page($event)">
   <span td-paging-bar-label hide-xs>Row per page:</span>
   {{pagingBar.range}} <span hide-xs>of {{pagingBar.total}}</span>
 </td-paging-bar>

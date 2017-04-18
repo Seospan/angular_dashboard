@@ -7,6 +7,7 @@ import {
     ITdDataTableColumn,
     IPageChangeEvent } from '@covalent/core';
 
+
 import { Subscription }   from 'rxjs/Subscription';
 
 import { FilterService } from '../services/filter-service';
@@ -23,7 +24,10 @@ export class FdGroupbyDatatableComponent implements OnInit {
     private debugLog(str){ this.DEBUG && console.log(str); }
 
     private data : FraudDataElem[];
-    private columns : ITdDataTableColumn[];
+    private columns : ITdDataTableColumn[] = [];
+    //Columns that represent an id. To be used by the "show ids" column
+    private withoutIdColumns : ITdDataTableColumn[] = [];
+    private withIdColumns : ITdDataTableColumn[] = [];
 
     filteredData: any[];
     filteredTotal: number;
@@ -31,7 +35,7 @@ export class FdGroupbyDatatableComponent implements OnInit {
     searchTerm: string = '';
     fromRow: number = 1;
     currentPage: number = 1;
-    pageSize: number = 50;
+    pageSize: number = 10;
     sortBy: string = 'conversions';
     sortOrder: TdDataTableSortingOrder = TdDataTableSortingOrder.Descending;
 
@@ -49,6 +53,8 @@ export class FdGroupbyDatatableComponent implements OnInit {
     @Input() groupByFields : string[];
     @Input() availableGroupByFields : string[];
     @ViewChild('pagingBar') pagingBar
+
+    displayIdsInDatatable : boolean = false;
 
     constructor(private filterService : FilterService,
         private dataFraudDetectorService : DataFaudDetectorService,
@@ -118,26 +124,51 @@ En fait elle ne marche pas:
 
         /**
          * Add one column per grouping parameter
+         * Needs to be mapped on this.groupByFields and not fitlered on detailsAvailableGroupByFields to keep order
          */
-        this.groupByFieldsWithDetails = this.detailsAvailableGroupByFields.filter((elem)=>{
-                 return this.groupByFields.indexOf(elem.id) != -1
-             });
-        this.columns = [
+        this.groupByFieldsWithDetails = this.groupByFields.map((elem)=>{
+            return this.detailsAvailableGroupByFields.filter((detailedElem)=>{
+                return detailedElem.id == elem;
+            })[0];
+        });
+
+        this.withIdColumns = [
                  { name : 'conversions', label:'Conversions', numeric: true },
                  { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
                  { name : 'percent_certified', label:'% Certified', numeric: true },
              ];
+        this.withoutIdColumns = [
+                 { name : 'conversions', label:'Conversions', numeric: true },
+                 { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
+                 { name : 'percent_certified', label:'% Certified', numeric: true },
+             ];
+        //Data go through a intermediate array so that they appear in the right order
+        let columnsToAddWithId = [];
+        let columnsToAddWithoutId = [];
         this.groupByFieldsWithDetails.map((elem) => {
             console.log("trucjx2");
             console.log(elem);
             if(elem.name){
-                this.columns.unshift({name: elem.id, label: elem.label+" ID"})
-                this.columns.unshift({name: elem.name, label: elem.label})
+                //Create a "with id" and a "wihout id" set on columns
+                columnsToAddWithoutId.push({name: elem.name, label: elem.label});
+
+                columnsToAddWithId.push({name: elem.name, label: elem.label});
+                columnsToAddWithId.push({name: elem.id, label: elem.label+" ID"});
             }else{
                 //Covers for date (no name)
-                this.columns.unshift({name: elem.id, label: elem.label})
+                columnsToAddWithoutId.push({name: elem.id, label: elem.label})
+                columnsToAddWithId.push({name: elem.id, label: elem.label})
             }
         });
+        //Concatenate constant columns (defined above) with dybamic columns
+        this.withIdColumns = columnsToAddWithId.concat(this.withIdColumns);
+        this.withoutIdColumns = columnsToAddWithoutId.concat(this.withoutIdColumns);
+        //Put columns depending of "display ids" (displayIdsInDatatable) toggle option
+        if(this.displayIdsInDatatable == true){
+            this.columns = this.withIdColumns;
+        }else{
+            this.columns = this.withoutIdColumns;
+        }
 
     }
 
@@ -167,6 +198,19 @@ En fait elle ne marche pas:
         newData = this._dataTableService.sortData(newData, this.sortBy, this.sortOrder);
         newData = this._dataTableService.pageData(newData, this.fromRow, this.currentPage * this.pageSize);
         this.filteredData = newData;
+    }
+
+    toggleIdColumns(){
+        this.displayIdsInDatatable = !this.displayIdsInDatatable;
+        console.log("ID DISPLAY");
+        console.log(this.displayIdsInDatatable);
+        console.log(this.columns);
+        if(this.displayIdsInDatatable == true){
+            this.columns = this.withIdColumns;
+        }else{
+            this.columns = this.withoutIdColumns;
+        }
+
     }
 
 }
