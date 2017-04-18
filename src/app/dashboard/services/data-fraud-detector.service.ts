@@ -53,7 +53,18 @@ export class DataFaudDetectorService {
         });
     }
 
+    getDates(start_date, stop_date) : Date[] {
+        let dateArray = [];
+        for (var d = new Date(start_date); d <= stop_date; d.setDate(d.getDate() + 1)) {
+            dateArray.push(new Date(d))
+        }
+        return dateArray;
+    }
+
+
     aggregateFilteredData(filtered_data, detailedDimensions): any[]{
+        //console.log(filtered_data.length)
+
         // first we get arrays with ids as index and name as value for the 4 filters
         let advertisersNames = [];
         for(var advertiser of this.filterService.advertisers) {
@@ -143,8 +154,45 @@ export class DataFaudDetectorService {
             mapped_reduced_data[row]["percent_certified"] = percentage.toFixed(2);
             aggregated_and_filtered_data.push(mapped_reduced_data[row])
         }
-        this.debugLog("Filtered and Aggregated Data:")
-        this.debugLog(aggregated_and_filtered_data)
+        /*
+        Missing data tests
+        */
+        if(detailedDimensions.length == 1 && detailedDimensions[0].name =='') {
+            /*
+            If it's an aggregation only based on dates, we add missing days between the start date and the end date
+            */
+            let completeDateArray = this.getDates(this.filterService.getDateRange().startDate, this.filterService.getDateRange().endDate);
+            let dataDateArray = this.getUniqueList(aggregated_and_filtered_data, "conversion_date").map((date) => { return new Date(date)});
+            completeDateArray.map((date) => {
+                    if (dataDateArray.map(Number).indexOf(+date) === -1) {
+                        console.log(date);
+                        console.log(date.toISOString().slice(0, 10))
+                        let missing_date_row = {
+                            conversion_date: date.toISOString().slice(0, 10),
+                            conversions: 0,
+                            certified_conversions: 0,
+                            percent_certified: "100.00",
+                        };
+                        aggregated_and_filtered_data.push(missing_date_row);
+                    }
+                });
+        } else {
+            /*
+            Otherwise we test if we have an empty array
+            */
+            if(aggregated_and_filtered_data.length == 0) {
+                if(detailedDimensions[0].name != '') {
+                    aggregated_and_filtered_data[0] = {};
+                    // TODO Send an error or something else ?
+                    aggregated_and_filtered_data[0][detailedDimensions[0].name] = "No Data available using these filters!"
+                } else {
+                    aggregated_and_filtered_data[0] = {};
+                    aggregated_and_filtered_data[0][detailedDimensions[0].id] = "No Data available using these filters!"
+                }
+            }
+        }
+        this.debugLog("Filtered and Aggregated Data:");
+        this.debugLog(aggregated_and_filtered_data);
         return aggregated_and_filtered_data;
     }
 
