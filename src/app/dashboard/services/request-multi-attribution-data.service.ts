@@ -19,8 +19,8 @@ export class RequestMultiAttributionDataService {
     private debugLog(str){ this.DEBUG && console.log(str); }
 
     attributionModelIdSubject = new Subject<number>();
-    multiAttributionRawDataSubject = new Subject<any[]>();
-    multiAttributionFilteredDataSubject = new Subject<any[]>();
+    multiAttributionRawDataSubject = new Subject<FraudDataElem[]>();
+
 
     requestParamsMultiAttributionDataSubscription : Subscription;
 
@@ -51,67 +51,6 @@ export class RequestMultiAttributionDataService {
                 },
                 error: (err) => console.error(err),
             });
-        this.multiAttributionRawDataSubject
-        .combineLatest(
-            this.requestFraudDataService.rawFraudDataSubject,
-            this.filterService.advertisersSubject,
-            this.filterService.partnersSubject,
-            this.filterService.kpisSubject,
-            this.filterService.metaCampaignsSubject,
-        )
-        .subscribe({
-            next: (latest_values) => {
-                let ma_raw_data = latest_values[0];
-                let fd_raw_data = latest_values[1];
-                /*
-                Needed for the filters
-                TODO factorize in one service.
-                */
-                let allAdvertisersFromSubjectValue = latest_values[2];
-                let allPartnersFromSubjectValue = latest_values[3];
-                let allKpisFromSubjectValue = latest_values[4];
-                let allMetaCampaignsFromSubjectValue = latest_values[5];
-                let selectAdvertisersId = allAdvertisersFromSubjectValue
-                    .filter((advertiser) => { return advertiser.isSelected; })
-                    .map((advertiser) => { return advertiser.sizmek_id; });
-                let selectKpisId = allKpisFromSubjectValue
-                    .filter((kpi) => { return kpi.isSelected; })
-                    .map((kpi) => { return kpi.id; });
-                let selectMetaCampaingsId = allMetaCampaignsFromSubjectValue
-                    .filter((metacampaign) => { return metacampaign.isSelected; })
-                    .map((metacampaign) => { return metacampaign.id; });
-                let selectPartnersId = allPartnersFromSubjectValue
-                    .filter((partner) => { return partner.isSelected; })
-                    .map((partner) => { return partner.id; });
-                let ma_filtered_data = ma_raw_data
-                    .filter((row) => {
-                        return (selectAdvertisersId.indexOf(row.advertiser_id) !== -1) &&
-                        (selectKpisId.indexOf(row.kpi_id) !== -1) &&
-                        (selectMetaCampaingsId.indexOf(row.metacampaign_id) !== -1) &&
-                        (selectPartnersId.indexOf(row.partner_id) !== -1)
-                    });
-                let fd_filtered_data = fd_raw_data
-                    .filter((row) => {
-                        return (selectAdvertisersId.indexOf(row.advertiser_id) !== -1) &&
-                        (selectKpisId.indexOf(row.kpi_id) !== -1) &&
-                        (selectMetaCampaingsId.indexOf(row.metacampaign_id) !== -1) &&
-                        (selectPartnersId.indexOf(row.partner_id) !== -1)
-                    });
-                /*
-                Filter then concatenate the data
-                */
-                ma_filtered_data = ma_filtered_data.map(row => {
-                    (<any>row).pivot = 1;
-                    return(row)
-                })
-                fd_filtered_data = fd_filtered_data.map(row => {
-                    (<any>row).pivot = 0;
-                    return(row)
-                })
-                let filtered_data = fd_filtered_data.concat(ma_filtered_data)
 
-                console.log(filtered_data);
-            }
-        });
     }
 }
