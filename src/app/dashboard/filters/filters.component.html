@@ -20,8 +20,8 @@ Selected model :
   <md-card-content>
     <h2>Advertisers</h2>
     <section>
-        <div (click)="changeAllFilter(advertisers,true)"> Check all </div>
-        <div (click)="changeAllFilter(advertisers,false)"> Uncheck all </div>
+        <div (click)="changeAllFilter(filterService.advertisers,true)"> Check all </div>
+        <div (click)="changeAllFilter(filterService.advertisers,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
           <ul >
               <ng-container *ngFor="let advertiser of filterService.advertisers" >
@@ -45,8 +45,8 @@ Selected model :
   <md-card-content>
     <h2>Partners</h2>
       <section>
-        <div (click)="changeAllFilter(partners,true)"> Check all </div>
-        <div (click)="changeAllFilter(partners,false)"> Uncheck all </div>
+        <div (click)="changeAllFilter(filterService.partners,true)"> Check all </div>
+        <div (click)="changeAllFilter(filterService.partners,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
             <ul >
               <ng-container *ngFor="let partner of filterService.partners">
@@ -70,8 +70,8 @@ Selected model :
   <md-card-content>
     <h2>Kpis</h2>
       <section>
-        <div (click)="changeAllFilter(kpis,true)"> Check all </div>
-        <div (click)="changeAllFilter(kpis,false)"> Uncheck all </div>
+        <div (click)="changeAllFilter(filterService.kpis,true)"> Check all </div>
+        <div (click)="changeAllFilter(filterService.kpis,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
             <ul >
               <ng-container *ngFor="let kpi of filterService.kpis">
@@ -95,8 +95,8 @@ Selected model :
   <md-card-content>
     <h2>MetaCampaigns</h2>
       <section>
-        <div (click)="changeAllFilter(metaCampaigns,true)"> Check all </div>
-        <div (click)="changeAllFilter(metaCampaigns,false)"> Uncheck all </div>
+        <div (click)="changeAllFilter(filterService.metaCampaigns,true)"> Check all </div>
+        <div (click)="changeAllFilter(filterService.metaCampaigns,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
             <ul >
               <ng-container *ngFor="let metaCampaign of filterService.metaCampaigns">
