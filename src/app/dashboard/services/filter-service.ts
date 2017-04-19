@@ -104,10 +104,10 @@ export class FilterService {
     // Associated subjects and observables
     showFilters = this.showFiltersSource.asObservable();
 
-    advertisersSubject = new Subject<Advertiser[]>();
-    partnersSubject = new Subject<Partner[]>();
-    kpisSubject = new Subject<Kpi[]>();
-    metaCampaignsSubject = new Subject<MetaCampaign[]>();
+    advertisersSubject = new BehaviorSubject<Advertiser[]>([]);
+    partnersSubject = new BehaviorSubject<Partner[]>([]);
+    kpisSubject = new BehaviorSubject<Kpi[]>([]);
+    metaCampaignsSubject = new BehaviorSubject<MetaCampaign[]>([]);
 
     // Default values used in the setting:
     // Should be moved to the constructor instead ???
