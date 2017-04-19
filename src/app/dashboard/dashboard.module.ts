@@ -17,6 +17,7 @@ import { ReportingComponent } from './reporting/reporting.component';
 import { FilterService } from './services/filter-service';
 import { RequestFraudDataService } from './services/request-fraud-data-services';
 import { DataFaudDetectorService } from './services/data-fraud-detector.service';
+import { MultiAttributionDataService } from './services/multi-attribution-data.service'
 import { AdvertiserService,
         PartnerService,
         KpiService,
@@ -29,6 +30,7 @@ import { DatePickerModule } from 'ng2-datepicker';
 import { NgDateRangePickerModule } from 'ng-daterangepicker';
 import { Daterangepicker } from 'ng2-daterangepicker';
 import { FdGroupbyDatatableComponent } from './fd-groupby-datatable/fd-groupby-datatable.component';
+import { MaGroupbyDatatableComponent } from './ma-groupby-datatable/ma-groupby-datatable.component';
 
 
 @NgModule({
@@ -50,6 +52,7 @@ import { FdGroupbyDatatableComponent } from './fd-groupby-datatable/fd-groupby-d
     ReportingComponent,
     FiltersComponent,
     FdGroupbyDatatableComponent,
+    MaGroupbyDatatableComponent,
   ],
   providers: [
     FilterService,
