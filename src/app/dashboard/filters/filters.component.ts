@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FilterService } from '../services/filter-service';
 import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index';
 import { Subscription }   from 'rxjs/Subscription';
@@ -20,14 +20,39 @@ export class FiltersComponent implements OnInit {
         this.debugLog("Constructor filters component");
     }
 
+    expanded=false;
+
     ngOnInit():void{
         //this.filterService.initAllFilters();
         //this.filterService.initAttributionModels();
+        let today = new Date();
         this.options = {
             locale: { format: 'DD-MM-YYYY' },
-            alwaysShowCalendars: false,
+            alwaysShowCalendars: true,
             startDate : this.filterService.getDateRange().startDate,
             endDate : this.filterService.getDateRange().endDate,
+            ranges: {
+                    "Today": [
+                        today,
+                        today,
+                    ],
+                    "Yesterday": [
+                        new Date().setDate(today.getDate()-1),
+                        new Date().setDate(today.getDate()-1),
+                    ],
+                    "Last 7 Days": [
+                        new Date().setDate(today.getDate()-7),
+                        today
+                    ],
+                    "Last 30 Days": [
+                        new Date().setDate(today.getDate()-30),
+                        today
+                    ],
+                    "Last 90 days": [
+                        new Date().setDate(today.getDate()-90),
+                        today
+                    ],
+                },
         };
     }
 

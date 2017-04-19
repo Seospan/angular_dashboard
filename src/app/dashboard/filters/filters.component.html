@@ -15,25 +15,29 @@ Selected model :
 <span *ngFor="let model of filterService.attributionModels"><span *ngIf="model.id == filterService.selectedAttributionModelId">{{model.name}} ({{model.id}})</span></span>
 
 <br />
-Date values : {{filterService.dateValues | async }}
+
 <md-card class="result">
   <md-card-content>
     <h2>Advertisers</h2>
-      <section>
+    <section>
         <div (click)="changeAllFilter(advertisers,true)"> Check all </div>
         <div (click)="changeAllFilter(advertisers,false)"> Uncheck all </div>
-        <div *ngFor="let advertiser of filterService.advertisers">
-            <md-checkbox
-                  *ngIf="advertiser.isSelectable"
-                  [(ngModel)]="advertiser.isSelected"
-                  (change)="updateAdvertisers()"
-                  [ngClass]="{'active' : advertiser.isSelected}"
-                  [align]="start"
+        <fieldset class="filters_fieldset">
+          <ul >
+              <ng-container *ngFor="let advertiser of filterService.advertisers" >
+                <li *ngIf="advertiser.isSelectable" >
+                  <md-checkbox
+                    [(ngModel)]="advertiser.isSelected"
+                    (change)="updateAdvertisers()"
+                    [ngClass]="{'active' : advertiser.isSelected}"
                   >
-                {{ advertiser.common_name }} : {{advertiser.isSelected}} ( {{advertiser.sizmek_id}})
-              </md-checkbox>
-        </div>
-      </section>
+                  {{ advertiser.common_name }} : {{advertiser.isSelected}} ( {{advertiser.sizmek_id}})
+                  </md-checkbox>
+                </li>
+              </ng-container>
+          </ul>
+      </fieldset>
+    </section>
   </md-card-content>
 </md-card>
 
@@ -43,18 +47,22 @@ Date values : {{filterService.dateValues | async }}
       <section>
         <div (click)="changeAllFilter(partners,true)"> Check all </div>
         <div (click)="changeAllFilter(partners,false)"> Uncheck all </div>
-        <div *ngFor="let partner of filterService.partners">
-          <md-checkbox
-                *ngIf="partner.isSelectable"
-                [(ngModel)]="partner.isSelected"
-                (change)="updatePartners()"
-                [ngClass]="{'active' : partner.isSelected}"
-                [align]="start"
-                >
-              {{ partner.name }} : {{partner.isSelected}}
-            </md-checkbox>
-        </div>
-      </section>
+        <fieldset class="filters_fieldset">
+            <ul >
+              <ng-container *ngFor="let partner of filterService.partners">
+                <li *ngIf="partner.isSelectable" >
+                  <md-checkbox
+                  [(ngModel)]="partner.isSelected"
+                  (change)="updatePartners()"
+                  [ngClass]="{'active' : partner.isSelected}"
+                  >
+                  {{ partner.name }} : {{partner.isSelected}}
+                  </md-checkbox>
+                </li>
+              </ng-container>
+          </ul>
+      </fieldset>
+    </section>
   </md-card-content>
 </md-card>
 
@@ -64,17 +72,21 @@ Date values : {{filterService.dateValues | async }}
       <section>
         <div (click)="changeAllFilter(kpis,true)"> Check all </div>
         <div (click)="changeAllFilter(kpis,false)"> Uncheck all </div>
-        <div *ngFor="let kpi of filterService.kpis">
-          <md-checkbox
-                *ngIf="kpi.isSelectable"
-                [(ngModel)]="kpi.isSelected"
-                (change)="updateKpis()"
-                [ngClass]="{'active' : kpi.isSelected}"
-                [align]="start"
-                >
-              {{ kpi.name }} : {{kpi.isSelected}}
-            </md-checkbox>
-        </div>
+        <fieldset class="filters_fieldset">
+            <ul >
+              <ng-container *ngFor="let kpi of filterService.kpis">
+                <li *ngIf="kpi.isSelectable" >
+                  <md-checkbox
+                  [(ngModel)]="kpi.isSelected"
+                  (change)="updateKpis()"
+                  [ngClass]="{'active' : kpi.isSelected}"
+                  >
+                  {{ kpi.name }} : {{kpi.isSelected}}
+                  </md-checkbox>
+                </li>
+              </ng-container>
+          </ul>
+        </fieldset>
       </section>
   </md-card-content>
 </md-card>
@@ -85,17 +97,21 @@ Date values : {{filterService.dateValues | async }}
       <section>
         <div (click)="changeAllFilter(metaCampaigns,true)"> Check all </div>
         <div (click)="changeAllFilter(metaCampaigns,false)"> Uncheck all </div>
-        <div *ngFor="let metaCampaign of filterService.metaCampaigns">
-          <md-checkbox
-                *ngIf="metaCampaign.isSelectable"
-                [(ngModel)]="metaCampaign.isSelected"
-                (change)="updateMetaCampaigns()"
-                [ngClass]="{'active' : metaCampaign.isSelected}"
-                [align]="start"
-                >
-              {{ metaCampaign.name }} : {{metaCampaign.isSelected}}
-            </md-checkbox>
-        </div>
+        <fieldset class="filters_fieldset">
+            <ul >
+              <ng-container *ngFor="let metaCampaign of filterService.metaCampaigns">
+                <li *ngIf="metaCampaign.isSelectable" >
+                  <md-checkbox
+                  [(ngModel)]="metaCampaign.isSelected"
+                  (change)="updateMetaCampaigns()"
+                  [ngClass]="{'active' : metaCampaign.isSelected}"
+                  >
+                  {{ metaCampaign.name }} : {{metaCampaign.isSelected}}
+                  </md-checkbox>
+                </li>
+              </ng-container>
+          </ul>
+        </fieldset>
       </section>
   </md-card-content>
 </md-card>
