@@ -3,6 +3,8 @@ import { Component, HostBinding, OnInit } from '@angular/core';
 import { fadeAnimation } from '../app.animations';
 import { DashboardComponent } from '../dashboard/dashboard.component';
 
+import { RLikeDataTable } from '../models/app-models/r-like-datatable';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -49,7 +51,22 @@ export class HomeComponent implements OnInit {
     },
   ];
 
+  //a = new RLikeDataTable();
+
   constructor() {
+      /*this.a.createFromObjectArray(this.updates)
+      this.a.createFromObjectArray(this.updates)
+      console.log(this.a.data)
+      this.a.addColumn('truc', [1,2,3,4,5,6])
+      this.a.addColumn('truc2', [1,2,3,4,5,6])
+      this.a.computeNewColumn("res", (foo, bar) => { return foo+bar }, "truc", "truc2")
+      console.log(this.a.getColumn("truc"))
+      console.log(this.a.singleTest("truc", e => { return e%2==0 }))
+      this.a.simpleFilter(this.a.singleTest("truc", e => { return e%2==0 }))
+      console.log(this.a.getColumn("truc"))
+      console.log(this.a.getObjectArray())
+      console.log("prout")
+      console.log(this.a.data)*/
   }
 
   ngOnInit(): void {
