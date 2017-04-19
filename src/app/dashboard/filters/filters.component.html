@@ -19,9 +19,6 @@ Selected model :
 <md-card class="result">
   <md-card-content>
     <h2>Advertisers</h2>
-    <section>
-        <div (click)="changeAllFilter(filterService.advertisers,true)"> Check all </div>
-        <div (click)="changeAllFilter(filterService.advertisers,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
           <ul >
               <ng-container *ngFor="let advertiser of filterService.advertisers" >
@@ -37,16 +34,16 @@ Selected model :
               </ng-container>
           </ul>
       </fieldset>
-    </section>
+      <div layout="row" layout-align="end center">
+        <button md-raised-button color="primary" (click)="changeAllAdvertisers(true)">Check all</button>
+        <button md-raised-button color="accent" (click)="changeAllAdvertisers(false)">Uncheck all</button>
+      </div>
   </md-card-content>
 </md-card>
 
 <md-card class="result">
   <md-card-content>
     <h2>Partners</h2>
-      <section>
-        <div (click)="changeAllFilter(filterService.partners,true)"> Check all </div>
-        <div (click)="changeAllFilter(filterService.partners,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
             <ul >
               <ng-container *ngFor="let partner of filterService.partners">
@@ -62,16 +59,16 @@ Selected model :
               </ng-container>
           </ul>
       </fieldset>
-    </section>
+      <div layout="row" layout-align="end center">
+        <button md-raised-button color="primary" (click)="changeAllPartners(true)">Check all</button>
+        <button md-raised-button color="accent" (click)="changeAllPartners(false)">Uncheck all</button>
+      </div>
   </md-card-content>
 </md-card>
 
 <md-card class="result">
   <md-card-content>
     <h2>Kpis</h2>
-      <section>
-        <div (click)="changeAllFilter(filterService.kpis,true)"> Check all </div>
-        <div (click)="changeAllFilter(filterService.kpis,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
             <ul >
               <ng-container *ngFor="let kpi of filterService.kpis">
@@ -87,16 +84,16 @@ Selected model :
               </ng-container>
           </ul>
         </fieldset>
-      </section>
+        <div layout="row" layout-align="end center">
+          <button md-raised-button color="primary" (click)="changeAllKpis(true)">Check all</button>
+          <button md-raised-button color="accent" (click)="changeAllKpis(false)">Uncheck all</button>
+        </div>
   </md-card-content>
 </md-card>
 
 <md-card class="result">
   <md-card-content>
     <h2>MetaCampaigns</h2>
-      <section>
-        <div (click)="changeAllFilter(filterService.metaCampaigns,true)"> Check all </div>
-        <div (click)="changeAllFilter(filterService.metaCampaigns,false)"> Uncheck all </div>
         <fieldset class="filters_fieldset">
             <ul >
               <ng-container *ngFor="let metaCampaign of filterService.metaCampaigns">
@@ -112,6 +109,9 @@ Selected model :
               </ng-container>
           </ul>
         </fieldset>
-      </section>
+        <div layout="row" layout-align="end center">
+          <button md-raised-button color="primary" (click)="changeAllMetaCampaigns(true)">Check all</button>
+          <button md-raised-button color="accent" (click)="changeAllMetaCampaigns(false)">Uncheck all</button>
+        </div>
   </md-card-content>
 </md-card>

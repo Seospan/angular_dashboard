@@ -1,4 +1,6 @@
-
+button{
+  margin:5px;
+}
 
 .filters_fieldset ul{
      -webkit-column-count: 6; /* Chrome, Safari, Opera */

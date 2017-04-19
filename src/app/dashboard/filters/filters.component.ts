@@ -11,9 +11,10 @@ import { NgDateRangePickerOptions } from 'ng-daterangepicker';
   styleUrls: ['./filters.component.css']
 })
 export class FiltersComponent implements OnInit {
-    DEBUG: boolean = true;
+    DEBUG: boolean = false;
     private debugLog(str){ this.DEBUG && console.log(str); }
 
+    //Options for daterange picker
     public options: any ;
 
     constructor(private filterService : FilterService) {
@@ -72,6 +73,26 @@ export class FiltersComponent implements OnInit {
     public changeModel(value):void {
         this.filterService.setAttributionModelId(value);
         this.debugLog("New model : "+value);
+    }
+
+    public changeAllAdvertisers(state){
+        this.filterService.advertisers.map((e) => {e.isSelected = state; return e;});
+        this.updateAdvertisers();
+    }
+
+    public changeAllPartners(state){
+        this.filterService.partners.map((e) => {e.isSelected = state; return e;});
+        this.updatePartners();
+    }
+
+    public changeAllKpis(state){
+        this.filterService.kpis.map((e) => {e.isSelected = state; return e;});
+        this.updateKpis();
+    }
+
+    public changeAllMetaCampaigns(state){
+        this.filterService.metaCampaigns.map((e) => {e.isSelected = state; return e;});
+        this.updateMetaCampaigns();
     }
 
     public updateAdvertisers():void{
