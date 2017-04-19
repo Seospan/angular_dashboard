@@ -24,7 +24,7 @@ import { AttributionModel } from '../../models/server-models/index';
 export class FilterService {
     /* General options */
 
-    DEBUG : boolean = true;
+    DEBUG : boolean = false;
     private debugLog(str){ this.DEBUG && console.log(str); }
 
     /**
@@ -104,10 +104,10 @@ export class FilterService {
     // Associated subjects and observables
     showFilters = this.showFiltersSource.asObservable();
 
-    advertisersSubject = new Subject<Advertiser[]>();
-    partnersSubject = new Subject<Partner[]>();
-    kpisSubject = new Subject<Kpi[]>();
-    metaCampaignsSubject = new Subject<MetaCampaign[]>();
+    advertisersSubject = new BehaviorSubject<Advertiser[]>([]);
+    partnersSubject = new BehaviorSubject<Partner[]>([]);
+    kpisSubject = new BehaviorSubject<Kpi[]>([]);
+    metaCampaignsSubject = new BehaviorSubject<MetaCampaign[]>([]);
 
     // Default values used in the setting:
     // Should be moved to the constructor instead ???
@@ -275,9 +275,7 @@ export class FilterService {
        this.advertisers = allAdvertisers.map(function(e){
            //console.log("Edit Advertisers");
            if(selectableAdvertisers.indexOf(e.sizmek_id)!=-1){
-               //console.log("Comparing "+e.sizmek_id);
                 e.isSelectable = true;
-                //console.log(e);
                 return e;
              }
            else{
@@ -287,7 +285,10 @@ export class FilterService {
        });
        this.partners = allPartners.map(function(e){
            if(selectablePartners.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
-           else{ return e; }
+           else{
+               e.isSelectable = false;
+               return e;
+           }
        });
        this.kpis = allKpis.map(function(e){
            if(selectableKpis.indexOf(e.id)!=-1){ e.isSelectable = true; return e; }
@@ -305,7 +306,13 @@ export class FilterService {
        });
        this.debugLog("Advertisers afterupdate");
        this.debugLog(this.advertisers);
-       this.debugLog(this);
+       this.debugLog("Partners afterupdate");
+       this.debugLog(this.partners);
+       this.debugLog("Kpis afterupdate");
+       this.debugLog(this.kpis);
+       this.debugLog("Metacampaigns afterupdate");
+       this.debugLog(this.metaCampaigns);
+
     }
 
     initAllFilters():void{
