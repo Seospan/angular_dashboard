@@ -1,19 +1,25 @@
 
 
-<input type="text" name="daterangeInput" daterangepicker [options]="options" (selected)="selectedDate($event)" />
+<!--<input type="text"  placeholder="Favorite food" mdInput color="accent" value="test" name="daterangeInput" daterangepicker [options]="options" (selected)="selectedDate($event)" />-->
 
-<select #modelChoice (change)="changeModel(modelChoice.value)" name="attributionModel" [(ngModel)]="filterService.selectedAttributionModelId">
-  <option *ngFor="let model of filterService.attributionModels"
-            [value]="model.id"
-            [selected]="model.id == filterService.selectedAttributionModelId"
-            >
-            {{ model.name }} ( {{ model.id }} )
-          </option>
-</select>
+<div class="input-group" daterangepicker [options]="options" (selected)="selectedDate($event)" >
+    <span class="form-control uneditable-input"  name="daterange" >
+        {{ filterService.getDateRange().startDate | date:'M/dd/y' }} - {{ filterService.getDateRange().endDate| date:'M/dd/y' }}
+    </span>
+    <span class="input-group-btn">
+        <a type="button" class="btn btn-default"><i class="glyphicon glyphicon-calendar"></i></a>
+    </span>
+</div>
+
+<br />
+
+<md-select #modelChoice2 (change)="changeModel($event.value)" name="attributionModel" [(ngModel)]="filterService.selectedAttributionModelId" >
+   <md-option  *ngFor="let model of filterService.attributionModels"
+             [value]="model.id">( {{ model.id }} ) {{ model.name }} </md-option>
+</md-select>
+
 Selected model :
-{{filterService.selectedAttributionModelId}}
-<span *ngFor="let model of filterService.attributionModels"><span *ngIf="model.id == filterService.selectedAttributionModelId">{{model.name}} ({{model.id}})</span></span>
-
+{{filterService.selectedAttributionModelId}}<br />
 <br />
 
 <md-card class="result">
