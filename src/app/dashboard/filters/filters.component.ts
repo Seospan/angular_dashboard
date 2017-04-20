@@ -71,8 +71,11 @@ export class FiltersComponent implements OnInit {
     }
 
     public changeModel(value):void {
-        this.filterService.setAttributionModelId(value);
-        this.debugLog("New model : "+value);
+        console.log("MODEL");
+        console.log(parseInt(value));
+        //Goes through setter which triggers recalulation of data
+        this.filterService.selectedAttributionModelId = parseInt(value);
+        this.debugLog("New model : "+parseInt(value));
     }
 
     public changeAllAdvertisers(state){

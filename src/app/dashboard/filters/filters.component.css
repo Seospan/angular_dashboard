@@ -1,3 +1,7 @@
+md-select, .mat-select-panel{
+  width:60%;
+}
+
 button{
   margin:5px;
 }

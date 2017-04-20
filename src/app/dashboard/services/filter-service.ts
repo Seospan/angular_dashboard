@@ -48,7 +48,20 @@ export class FilterService {
     // Define the needed attributes
     private dateRange : {startDate, endDate};
     private _attributionModels : AttributionModel[];
-    selectedAttributionModelId : string; // TODO switch to private ?
+    private _selectedAttributionModelId : number; // TODO switch to private ?
+    set selectedAttributionModelId(val){
+        console.log("SETTER ATTRIBUTION MODEL ID SERVICE");
+        this._selectedAttributionModelId = val;
+        this.debugLog("Setter from attribution model triggers data recalculation");
+        this.dataFraudDetectorRequest.next(
+            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
+        );
+    }
+    get selectedAttributionModelId(){
+        //console.log("GETTER ATTRIBUTION MODEL ID SERVICE");
+        return this._selectedAttributionModelId;
+    }
+
 
     // Associated subjects
     dataFraudDetectorRequest : BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>;
@@ -63,13 +76,6 @@ export class FilterService {
     setDateRange(dateRange){
         this.dateRange = dateRange;
         this.debugLog("Setter from dateRange attributes triggers data recalculation");
-        this.dataFraudDetectorRequest.next(
-            {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
-        );
-    }
-    setAttributionModelId(selectedAttributionModelId){
-        this.selectedAttributionModelId = selectedAttributionModelId;
-        this.debugLog("Setter from attribution model triggers data recalculation");
         this.dataFraudDetectorRequest.next(
             {startDate : this.dateRange.startDate, endDate : this.dateRange.endDate, selectedAttributionModelId : this.selectedAttributionModelId}
         );
@@ -164,11 +170,12 @@ export class FilterService {
         Then we need to load these values into the dataFraudDetectorRequest subject as its first values.
         */
         this.dateRange = this.initDefaultDateRange()
-        this.selectedAttributionModelId = "default";
+        //this.selectedAttributionModelId = "default";
         this.dataFraudDetectorRequest = new BehaviorSubject<{startDate, endDate, selectedAttributionModelId}>({
             startDate : this.dateRange.startDate,
             endDate : this.dateRange.endDate,
-            selectedAttributionModelId : this.selectedAttributionModelId
+            //selectedAttributionModelId : this.selectedAttributionModelId
+            selectedAttributionModelId : "default"
           });
         console.log(this.dataFraudDetectorRequest);
 
@@ -245,7 +252,7 @@ export class FilterService {
                         //this.debugLog(attributionModels);
                         //Puts modified value in to attributionModels
                         this.attributionModels = attributionModels;
-                        this.selectedAttributionModelId = attributionModels.filter(function(e){ return e.is_default_model==true })[0].id.toString();
+                        this.selectedAttributionModelId = attributionModels.filter(function(e){ return e.is_default_model==true })[0].id;
                 },
             ).catch(function(rejected){
                 console.error("PROMISE REJECTED : ");
