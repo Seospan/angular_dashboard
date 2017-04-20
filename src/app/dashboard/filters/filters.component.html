@@ -13,9 +13,9 @@
 
 <br />
 
-<md-select #modelChoice2 (change)="changeModel($event.value)" name="attributionModel" [(ngModel)]="filterService.selectedAttributionModelId" >
+<md-select placeholder="Attribution model" #modelChoice (change)="changeModel($event.value)" name="attributionModel" [(ngModel)]="filterService.selectedAttributionModelId" >
    <md-option  *ngFor="let model of filterService.attributionModels"
-             [value]="model.id">( {{ model.id }} ) {{ model.name }} </md-option>
+             [value]="model.id">{{ model.name }} ( {{ model.id }} ) </md-option>
 </md-select>
 
 Selected model :
