@@ -30,8 +30,12 @@ Active MetaCampaings : <br />
 </div>
 DATA : <br />
 -->
-
+<app-fd-timeserie-ngx></app-fd-timeserie-ngx>
 <app-fd-groupby-datatable
-      [availableGroupByFields]="['metacampaign_id','partner_id','advertiser_id','kpi_id','conversion_date']"
-      [defaultGroupByFields]="['conversion_date','partner_id','metacampaign_id','advertiser_id']"
-      ></app-fd-groupby-datatable>
+    [availableGroupByFields]="['metacampaign_id','partner_id','advertiser_id','kpi_id','conversion_date']"
+    [defaultGroupByFields]="['metacampaign_id','kpi_id']"
+    ></app-fd-groupby-datatable>
+<app-fd-groupby-datatable
+    [availableGroupByFields]="['metacampaign_id','partner_id','advertiser_id','kpi_id','conversion_date']"
+    [defaultGroupByFields]="['advertiser_id']"
+    ></app-fd-groupby-datatable>

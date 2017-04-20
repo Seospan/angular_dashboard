@@ -40,17 +40,16 @@ export class FdGroupbyDatatableComponent implements OnInit {
 
     private columns : ITdDataTableColumn[] = [];
 
-    filteredByDataTableData: any[];
-    filteredTotal: number;
+    private filteredByDataTableData: any[];
+    private filteredTotal: number;
 
     searchTerm: string = '';
     fromRow: number = 1;
     currentPage: number = 1;
-    pageSize: number = 10;
+    pageSize: number = 50;
     sortBy: string = 'conversions';
     sortOrder: TdDataTableSortingOrder = TdDataTableSortingOrder.Descending;
 
-    dataFraudDetectorSubscription : Subscription
 
     detailsAvailableGroupByFields : [{id:string,name:string,label:string,details:string,pk_identifier:string}] = [
             {id:'metacampaign_id',name:'metacampaign_name',label:'Meta Campaign',details:'metaCampaignsNames',pk_identifier:"id"},
@@ -69,6 +68,8 @@ export class FdGroupbyDatatableComponent implements OnInit {
 
     displayIdsInDatatable : boolean = false;
 
+    filteredFraudDataSubscription : Subscription;
+
     constructor(private filterService : FilterService,
         private dataFraudDetectorService : DataFaudDetectorService,
         private _dataTableService: TdDataTableService) {
@@ -77,61 +78,28 @@ export class FdGroupbyDatatableComponent implements OnInit {
             -
             */
 
-            this.dataFraudDetectorService.dataFraudDetector.combineLatest(
+            /*this.dataFraudDetectorService.dataFraudDetector.combineLatest(
                 this.filterService.advertisersSubject,
                 this.filterService.partnersSubject,
                 this.filterService.kpisSubject,
                 this.filterService.metaCampaignsSubject,
             ).subscribe({
             next : (latestValues) => {
-                //let data = latestValues[0];
-                //console.log("jxtruc")
-                //console.log(data)
-                /**TODO : retirer**/
-                //data = data.splice(1,10)
-
-
-                /*
-Factorized function
-
-En fait elle ne marche pas:
-* le service n'est pas connu par la fonction dès qu'on le sort de cet observer
-* Du coup le problème c'est que la propriété details de groupByFieldsWithDetails n'existe pas
-* De fait il n'arrive pas à faire le mapping
-* Donc il faut :
-*       1) virer le details de ce detailsAvailableGroupByFields, il ne sert à rien
-*       2) créer un objet dataTableColumns avec juste les colonnes de base
-*       3) transformer la fonction en observable de ce subject dans dataFraudDetectorService
-*       4) S'abonner aux observables comme ici
-*       5) Mettre en place les filtres
-*       6) Faire le groupby, mettre en place les bonnes colonnes
-*       7) renvoyer un object composé de:
-*           a) la data
-*           b) la liste de colonnes à rajouter
-*       8) ici on fait un observer sur l'observable en question, on récupére l'object, on le casse en deux,
-                 */
-                //let data2 = this.dataFraudDetectorService.dataGroupBy(this.groupByFieldsWithDetails, data)
-
-                    /**
-                     * Data for the dataTable
-                     */
-                //this.data = data2;
-                //this.filteredData = this.data;
-                //this.filteredTotal = this.data.length;
-                //this.filter();
             },
             error: (err) => console.error(err),
-        });
+        });*/
     }
 
     ngOnInit(): void {
         //Initiate activegroupbyfields to default value given in input
         this.activeGroupByFields=this.defaultGroupByFields;
-        this.dataFraudDetectorService.filteredFraudDataSubject.subscribe((filtered_data)=>{
-                this.filteredData = filtered_data;
-                this.findDetailedDimensionsAndAggregate(this.filteredData);
-            }
-        );
+        this.filteredFraudDataSubscription = this.dataFraudDetectorService.filteredFraudDataSubject.subscribe({
+            next: (filtered_data)=>{
+                    this.filteredData = filtered_data;
+                    this.findDetailedDimensionsAndAggregate(this.filteredData);
+                },
+            error: (err) => console.error(err),
+        });
 
         this.measuresColumns = [
              { name : 'conversions', label:'Conversions', numeric: true },

@@ -4,8 +4,6 @@ import { DataFaudDetectorService } from '../services/data-fraud-detector.service
 import { Advertiser, Brand, Kpi, MetaCampaign, Product, KpiAction, Partner } from '../../models/server-models/index';
 import { Subscription }   from 'rxjs/Subscription';
 
-declare var universe: any;
-import '../../../../assets/js/universe.min.js';
 
 @Component({
   selector: 'app-fraud-detector',

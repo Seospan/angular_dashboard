@@ -31,6 +31,9 @@ import { NgDateRangePickerModule } from 'ng-daterangepicker';
 import { Daterangepicker } from 'ng2-daterangepicker';
 import { FdGroupbyDatatableComponent } from './fd-groupby-datatable/fd-groupby-datatable.component';
 import { MaGroupbyDatatableComponent } from './ma-groupby-datatable/ma-groupby-datatable.component';
+import { FdTimeserieNgxComponent } from './fd-timeserie-ngx/fd-timeserie-ngx.component';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
+
 
 
 @NgModule({
@@ -43,6 +46,7 @@ import { MaGroupbyDatatableComponent } from './ma-groupby-datatable/ma-groupby-d
     DatePickerModule,
     NgDateRangePickerModule,
     Daterangepicker,
+    NgxChartsModule,
   ],
   declarations: [
     DashboardComponent,
@@ -53,6 +57,7 @@ import { MaGroupbyDatatableComponent } from './ma-groupby-datatable/ma-groupby-d
     FiltersComponent,
     FdGroupbyDatatableComponent,
     MaGroupbyDatatableComponent,
+    FdTimeserieNgxComponent,
   ],
   providers: [
     FilterService,

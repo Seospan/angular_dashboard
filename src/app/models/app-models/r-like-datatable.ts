@@ -60,12 +60,6 @@ export class RLikeDataTable {
             new_data.push(new_col);
         }
         this.data = new_data;
-
-        /*this.data.map(col => {
-            col.map((cell, index) => {
-
-            })
-        })*/
     }
 
     public createFromObjectArray<ObjectType>(object_array: Array<ObjectType>): boolean {

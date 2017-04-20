@@ -15,8 +15,6 @@ import { AppConfig } from '../../app.config';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/combineLatest';
 
-import '../../../../assets/js/universe.min.js';
-
 import { FraudDataElem } from '../../models/server-models/fraud-data-elem';
 
 @Injectable()
@@ -54,11 +52,12 @@ export class DataFaudDetectorService {
     }
 
     getDates(start_date, stop_date) : Date[] {
+        start_date.setTime(start_date.getTime() + 60*60*1000);
         let dateArray = [];
         for (var d = new Date(start_date); d <= stop_date; d.setDate(d.getDate() + 1)) {
             dateArray.push(new Date(d))
         }
-        return dateArray;
+        return dateArray.map((date) => { return date.toISOString().slice(0, 10);});
     }
 
 
@@ -158,20 +157,25 @@ export class DataFaudDetectorService {
         Missing data tests
         */
         if(detailedDimensions.length == 1 && detailedDimensions[0].name =='') {
+            console.log("Je passe par ici !");
             /*
             If it's an aggregation only based on dates, we add missing days between the start date and the end date
             */
-            let completeDateArray = this.getDates(this.filterService.getDateRange().startDate, this.filterService.getDateRange().endDate);
-            let dataDateArray = this.getUniqueList(aggregated_and_filtered_data, "conversion_date").map((date) => { return new Date(date)});
+            let completeDateArray =
+                this.getDates(this.filterService.getDateRange().startDate,
+                this.filterService.getDateRange().endDate);
+
+            let dataDateArray = this.getUniqueList(aggregated_and_filtered_data, "conversion_date")
+
             completeDateArray.map((date) => {
-                    if (dataDateArray.map(Number).indexOf(+date) === -1) {
+                    if (dataDateArray.indexOf(date) === -1) {
                         console.log(date);
-                        console.log(date.toISOString().slice(0, 10))
+                        console.log(date)
                         let missing_date_row = {
-                            conversion_date: date.toISOString().slice(0, 10),
-                            conversions: 0,
-                            certified_conversions: 0,
-                            percent_certified: "100.00",
+                            'conversion_date': date,
+                            'conversions': 0,
+                            'certified_conversions': 0,
+                            'percent_certified': "100.00",
                         };
                         aggregated_and_filtered_data.push(missing_date_row);
                     }
@@ -263,17 +267,8 @@ export class DataFaudDetectorService {
                         (selectMetaCampaingsId.indexOf(row.metacampaign_id) !== -1) &&
                         (selectPartnersId.indexOf(row.partner_id) !== -1)
                     });
-                // finally we send it to the filtered data subject.
+
                 this.filteredFraudDataSubject.next(filtered_data);
-                /*this.aggregateFilteredData(filtered_data, [
-                    {
-                        id:'metacampaign_id',
-                        name:'metacampaign_name',
-                        label:'Meta Campaign',
-                        details:'metaCampaignsNames',
-                        pk_identifier:"id"
-                    }
-                ]);*/
             },
             error: (err) => console.error(err),
         });
