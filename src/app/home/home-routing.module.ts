@@ -11,6 +11,7 @@ import { AuthGuard } from '../auth.guard';
 export const homeRoutes : Routes = [
   {
     path: 'home',
+    canActivate: [AuthGuard],
     component: HomeComponent,
     children: [
       // This is the default route for somebody who goes to home.
@@ -20,6 +21,7 @@ export const homeRoutes : Routes = [
       },
       {
         path: 'dashboard',
+        canActivateChild: [AuthGuard],
         loadChildren: '../dashboard/dashboard.module#DashboardModule'
         //loadChildren: () => DashboardModule
       },
