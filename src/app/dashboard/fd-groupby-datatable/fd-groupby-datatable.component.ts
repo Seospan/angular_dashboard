@@ -103,7 +103,7 @@ export class FdGroupbyDatatableComponent implements OnInit {
 
         this.measuresColumns = [
              { name : 'conversions', label:'Conversions', numeric: true },
-             { name : 'certified_conversions', label:'Certified Conversions', numeric: true },
+             { name : 'certified_conversions', label:'Certified', numeric: true },
              { name : 'percent_certified', label:'% Certified', numeric: true },
          ];
 

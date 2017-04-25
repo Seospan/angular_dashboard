@@ -62,6 +62,8 @@ export class DataFaudDetectorService {
 
 
     aggregateFilteredData(filtered_data, detailedDimensions): any[]{
+
+
         //console.log(filtered_data.length)
 
         // first we get arrays with ids as index and name as value for the 4 filters
