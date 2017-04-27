@@ -7,7 +7,6 @@ import { Subscription }   from 'rxjs/Subscription';
 import {  } from '../../_services/index';
 
 import { Http, Headers, RequestOptions, Response } from '@angular/http';
-import { UserService } from '../../_services/user.service';
 import { FilterService } from './filter-service';
 import { RequestFraudDataService } from './request-fraud-data-services';
 import { AppConfig } from '../../app.config';

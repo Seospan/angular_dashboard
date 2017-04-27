@@ -19,10 +19,14 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
       if (localStorage.getItem('currentUser')) {
             // logged in so return true
-            return true;
+            let user = JSON.parse(localStorage.getItem('currentUser'));
+            let exp_timestamp = JSON.parse(atob(user.token.split('.')[1])).exp;
+            if (new Date(exp_timestamp*1000) > new Date()) {
+                return true;
+            }
         }
 
-        // not logged in so redirect to login page with the return url
+        // not logged or expired timestamp in so redirect to login page with the return url
         this.router.navigate(['/login'], { queryParams: { returnUrl: state.url }});
         return false;
   }

@@ -7,7 +7,6 @@ import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
 
 import { FraudDataElem } from '../../models/server-models/fraud-data-elem';
-import { UserService } from '../../_services/user.service';
 import { FilterService } from '../services/filter-service';
 import { AppConfig } from '../../app.config';
 
